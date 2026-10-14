@@ -1,0 +1,82 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="{% block meta_description %}NovaStore — Premium electronics, laptops, smartphones, audio, and accessories designed for perfection.{% endblock %}">
+    <title>{% block title %}NovaStore — Next-Generation Electronics{% endblock %}</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Top Global Notification / Banner bar -->
+    <div class="top-announcement">
+        <div class="container top-announcement-content">
+            <span>Get up to ₹10,000 instant cashback with eligible cards. Plus free delivery across India.</span>
+        </div>
+    </div>
+
+    <!-- Navigation Header -->
+    <header class="site-header" id="site-header">
+        <nav class="nav-container">
+            <a href="{% url 'core:home' %}" class="nav-brand" aria-label="NovaStore Home">
+                <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+                <span class="brand-name">NovaStore</span>
+            </a>
+
+            <div class="nav-links">
+                <a href="{% url 'core:home' %}" class="nav-link">Store</a>
+                <a href="#featured" class="nav-link">Featured</a>
+                <a href="#categories" class="nav-link">Categories</a>
+                <a href="/admin/" class="nav-link" target="_blank" rel="noopener">Admin</a>
+            </div>
+
+            <div class="nav-actions">
+                <a href="/admin/" class="btn btn-sm btn-ghost" id="admin-nav-link">Admin Portal</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="site-main" id="main-content">
+        {% if messages %}
+            <div class="container messages-container">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container footer-content">
+            <div class="footer-bottom">
+                <p>&copy; {% now "Y" %} NovaStore Inc. All rights reserved. Built with Django 5.2.</p>
+                <div class="footer-links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Sale</a>
+                    <a href="#">Legal</a>
+                    <a href="#">Site Map</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Core Scripts -->
+    <script src="{% static 'js/main.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

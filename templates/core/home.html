@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}NovaStore — Next-Generation Electronics Store{% endblock %}
+
+{% block content %}
+<section class="hero-welcome">
+    <div class="container hero-inner">
+        <span class="badge-tag">Milestone 1 Active</span>
+        <h1 class="hero-title">Engineering the Future of Electronics</h1>
+        <p class="hero-subtitle">
+            Welcome to <strong>NovaStore</strong>. Built with Django 5.2 LTS, modern styling, and high-performance architecture.
+        </p>
+        <div class="hero-actions">
+            <a href="/admin/" class="btn btn-primary">Go to Django Admin</a>
+            <a href="#milestone-info" class="btn btn-secondary">System Status</a>
+        </div>
+    </div>
+</section>
+
+<section id="milestone-info" class="status-section">
+    <div class="container">
+        <div class="status-card">
+            <h2>Milestone 1 Verification Passed</h2>
+            <div class="status-grid">
+                <div class="status-item">
+                    <span class="status-label">Framework</span>
+                    <span class="status-value">Django 5.2 LTS</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Environment</span>
+                    <span class="status-value">Python 3.12 (.venv active)</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Database</span>
+                    <span class="status-value">SQLite (Local) / PostgreSQL Ready</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Static & Media</span>
+                    <span class="status-value">WhiteNoise & Pillow Configured</span>
+                </div>
+            </div>
+            <p class="status-note">
+                Next up in <strong>Milestone 2</strong>: Category, Product, Banner models, image handling, admin interface with image previews, and model migrations.
+            </p>
+        </div>
+    </div>
+</section>
+{% endblock %}

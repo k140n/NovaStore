@@ -1,10 +1,11 @@
+# NovaStore Production Blueprint - High-Res Photography & Media Enabled
 services:
   - type: web
     name: novastore
     runtime: python
     region: oregon
     plan: free
-    buildCommand: "bash ./build.sh"
+    buildCommand: "./build.sh"
     startCommand: "python manage.py migrate && python manage.py seed_data && gunicorn config.wsgi:application --bind 0.0.0.0:$PORT --workers 3 --threads 2"
     envVars:
       - key: PYTHON_VERSION

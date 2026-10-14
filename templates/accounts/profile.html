@@ -1,14 +1,236 @@
 {% extends "base.html" %}
+{% load static %}
 
-{% block title %}My Account — NovaStore{% endblock %}
+{% block title %}My Nova ID Account — NovaStore{% endblock %}
 
 {% block content %}
-<div class="container auth-container">
-    <div class="auth-card">
-        <h1>NovaStore Account</h1>
-        <p class="auth-subtitle">Welcome back to your member hub.</p>
-        <p class="placeholder-note">Account profile management will be implemented in Milestone 5.</p>
-        <a href="{% url 'core:home' %}" class="btn btn-primary">Return to Store</a>
+<div class="container section-spacing">
+
+    <!-- Profile Header Banner -->
+    <div class="profile-header-card">
+        <div class="profile-avatar-initials">
+            {% if user.first_name and user.last_name %}
+                {{ user.first_name|slice:":1" }}{{ user.last_name|slice:":1" }}
+            {% else %}
+                {{ user.username|slice:":2"|upper }}
+            {% endif %}
+        </div>
+
+        <div class="profile-header-info">
+            <h1 class="profile-name">
+                {% if user.get_full_name %}
+                    {{ user.get_full_name }}
+                {% else %}
+                    {{ user.username }}
+                {% endif %}
+            </h1>
+            <p class="profile-email">Nova ID: {{ user.email|default:user.username }}</p>
+            <div class="profile-badges">
+                <span class="profile-badge-pill">NovaStore Member</span>
+                {% if user.is_staff %}
+                    <span class="profile-badge-pill staff-badge">Administrator</span>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="profile-header-actions">
+            {% if user.is_staff %}
+                <a href="/admin/" class="btn btn-secondary btn-sm" target="_blank" rel="noopener">Admin Portal</a>
+            {% endif %}
+            <a href="{% url 'accounts:logout' %}" class="btn btn-outline-subtle btn-sm">Sign Out</a>
+        </div>
     </div>
+
+    <!-- Profile Dashboard Grid -->
+    <div class="profile-dashboard-grid">
+
+        <!-- Column 1: Personal Info & Security -->
+        <div class="profile-col-main">
+
+            <!-- Card 1: Personal Details Form -->
+            <div class="dashboard-panel">
+                <div class="panel-header">
+                    <h2>Personal Information</h2>
+                    <p>Manage the personal details and contact information linked to your Nova ID.</p>
+                </div>
+
+                <form method="post" action="{% url 'accounts:profile' %}" class="dashboard-form" novalidate>
+                    {% csrf_token %}
+                    <input type="hidden" name="update_profile" value="1">
+
+                    {% if profile_form.non_field_errors %}
+                        <div class="alert alert-error">
+                            {{ profile_form.non_field_errors }}
+                        </div>
+                    {% endif %}
+
+                    <div class="form-row-2">
+                        <div class="form-group">
+                            <label for="id_first_name" class="form-label">First Name</label>
+                            {{ profile_form.first_name }}
+                            {% if profile_form.first_name.errors %}
+                                <span class="field-error">{{ profile_form.first_name.errors.0 }}</span>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group">
+                            <label for="id_last_name" class="form-label">Last Name</label>
+                            {{ profile_form.last_name }}
+                            {% if profile_form.last_name.errors %}
+                                <span class="field-error">{{ profile_form.last_name.errors.0 }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_email" class="form-label">Email Address (Nova ID)</label>
+                        {{ profile_form.email }}
+                        {% if profile_form.email.errors %}
+                            <span class="field-error">{{ profile_form.email.errors.0 }}</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-actions-right">
+                        <button type="submit" class="btn btn-primary btn-sm">
+                            Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Card 2: Security & Password Change -->
+            <div class="dashboard-panel" id="security-panel">
+                <div class="panel-header">
+                    <h2>Sign-In &amp; Security</h2>
+                    <p>Update your password to keep your account and orders protected.</p>
+                </div>
+
+                <form method="post" action="{% url 'accounts:password_change' %}" class="dashboard-form" novalidate>
+                    {% csrf_token %}
+
+                    {% if password_form.non_field_errors %}
+                        <div class="alert alert-error">
+                            {% for err in password_form.non_field_errors %}
+                                <p>{{ err }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    <div class="form-group">
+                        <label for="id_old_password" class="form-label">Current Password</label>
+                        {{ password_form.old_password }}
+                        {% if password_form.old_password.errors %}
+                            <span class="field-error">{{ password_form.old_password.errors.0 }}</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-row-2">
+                        <div class="form-group">
+                            <label for="id_new_password1" class="form-label">New Password</label>
+                            {{ password_form.new_password1 }}
+                            {% if password_form.new_password1.errors %}
+                                <span class="field-error">{{ password_form.new_password1.errors.0 }}</span>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group">
+                            <label for="id_new_password2" class="form-label">Confirm New Password</label>
+                            {{ password_form.new_password2 }}
+                            {% if password_form.new_password2.errors %}
+                                <span class="field-error">{{ password_form.new_password2.errors.0 }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="form-actions-right">
+                        <button type="submit" class="btn btn-secondary btn-sm">
+                            Update Password
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+
+        <!-- Column 2: Devices & Account Snapshot -->
+        <div class="profile-col-sidebar">
+
+            <!-- Account Summary Card -->
+            <div class="dashboard-panel sidebar-panel">
+                <div class="panel-header">
+                    <h3>Account Summary</h3>
+                </div>
+                <div class="summary-list">
+                    <div class="summary-item">
+                        <span class="summary-label">Username</span>
+                        <span class="summary-value">{{ user.username }}</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Member Since</span>
+                        <span class="summary-value">{{ user.date_joined|date:"F d, Y" }}</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Last Active</span>
+                        <span class="summary-value">{{ user.last_login|date:"M d, Y, g:i A"|default:"Active Now" }}</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Status</span>
+                        <span class="summary-value" style="color: var(--tag-green);">Verified &bull; Active</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Your Devices -->
+            <div class="dashboard-panel sidebar-panel">
+                <div class="panel-header">
+                    <h3>Your Nova Devices</h3>
+                    <p style="font-size: 12px; color: var(--text-secondary);">Devices linked to this Nova ID.</p>
+                </div>
+                <div class="devices-list">
+                    {% for dev in user_devices %}
+                        <div class="device-card-item">
+                            <div class="device-icon-box">
+                                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                                    {% if dev.type == 'Laptop' %}
+                                        <rect x="2" y="4" width="20" height="13" rx="2"></rect><path d="M1 20h22"></path>
+                                    {% else %}
+                                        <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line>
+                                    {% endif %}
+                                </svg>
+                            </div>
+                            <div class="device-info">
+                                <span class="device-name">{{ dev.name }}</span>
+                                <span class="device-os">{{ dev.os }} &bull; {{ dev.status }}</span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Store Quick Links -->
+            <div class="dashboard-panel sidebar-panel">
+                <div class="panel-header">
+                    <h3>Quick Shortcuts</h3>
+                </div>
+                <div class="sidebar-shortcuts">
+                    <a href="{% url 'catalog:product_list' %}" class="shortcut-link">
+                        <span>Browse Electronics</span>
+                        <span class="arr">&rsaquo;</span>
+                    </a>
+                    <a href="{% url 'core:home' %}#featured" class="shortcut-link">
+                        <span>Featured Flagships</span>
+                        <span class="arr">&rsaquo;</span>
+                    </a>
+                    <a href="{% url 'accounts:logout' %}" class="shortcut-link" style="color: #ff453a;">
+                        <span>Sign Out</span>
+                        <span class="arr">&rsaquo;</span>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
 </div>
 {% endblock %}

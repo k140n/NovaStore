@@ -1,14 +1,105 @@
 {% extends "base.html" %}
+{% load static %}
 
-{% block title %}Create Nova Account — NovaStore{% endblock %}
+{% block title %}Create Your Nova ID — NovaStore{% endblock %}
 
 {% block content %}
-<div class="container auth-container">
-    <div class="auth-card">
-        <h1>Create Nova Account</h1>
-        <p class="auth-subtitle">One account for all your Nova devices and services.</p>
-        <p class="placeholder-note">Registration system will be implemented in Milestone 5.</p>
-        <a href="{% url 'core:home' %}" class="btn btn-primary">Return to Store</a>
+<div class="container auth-wrapper">
+    <div class="auth-card auth-card-wide">
+        <!-- Brand Icon -->
+        <div class="auth-brand-icon">
+            <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            </svg>
+        </div>
+
+        <h1 class="auth-title">Create Your Nova ID</h1>
+        <p class="auth-subtitle">One Nova ID is all you need to access NovaStore devices, warranties, and account services.</p>
+
+        <form method="post" action="{% url 'accounts:register' %}" class="auth-form" novalidate>
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="alert alert-error" role="alert">
+                    {% for error in form.non_field_errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <!-- Name Row -->
+            <div class="form-row-2">
+                <div class="form-group">
+                    <label for="id_first_name" class="form-label">First Name</label>
+                    {{ form.first_name }}
+                    {% if form.first_name.errors %}
+                        <span class="field-error">{{ form.first_name.errors.0 }}</span>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_last_name" class="form-label">Last Name</label>
+                    {{ form.last_name }}
+                    {% if form.last_name.errors %}
+                        <span class="field-error">{{ form.last_name.errors.0 }}</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Username & Email -->
+            <div class="form-row-2">
+                <div class="form-group">
+                    <label for="id_username" class="form-label">Username</label>
+                    {{ form.username }}
+                    {% if form.username.errors %}
+                        <span class="field-error">{{ form.username.errors.0 }}</span>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_email" class="form-label">Email Address</label>
+                    {{ form.email }}
+                    {% if form.email.errors %}
+                        <span class="field-error">{{ form.email.errors.0 }}</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Password Fields -->
+            <div class="form-row-2">
+                <div class="form-group">
+                    <label for="id_password" class="form-label">Password</label>
+                    {{ form.password }}
+                    {% if form.password.errors %}
+                        <span class="field-error">{{ form.password.errors.0 }}</span>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_confirm_password" class="form-label">Confirm Password</label>
+                    {{ form.confirm_password }}
+                    {% if form.confirm_password.errors %}
+                        <span class="field-error">{{ form.confirm_password.errors.0 }}</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="password-hints">
+                <span>&bull; Must be at least 8 characters in length</span>
+                <span>&bull; Cannot be entirely numeric or commonly used</span>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block btn-lg" style="margin-top: 20px;">
+                Create Nova ID &rsaquo;
+            </button>
+        </form>
+
+        <div class="auth-card-footer">
+            <p>
+                Already have a Nova ID? 
+                <a href="{% url 'accounts:login' %}" class="auth-link">Sign In &rsaquo;</a>
+            </p>
+        </div>
     </div>
 </div>
 {% endblock %}

@@ -25,6 +25,9 @@ DEBUG = os.getenv("DEBUG", "True").lower() in ("true", "1", "yes")
 allowed_hosts_env = os.getenv("ALLOWED_HOSTS", "127.0.0.1,localhost,testserver")
 ALLOWED_HOSTS = [host.strip() for host in allowed_hosts_env.split(",") if host.strip()]
 
+csrf_trusted_env = os.getenv("CSRF_TRUSTED_ORIGINS", "")
+CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in csrf_trusted_env.split(",") if origin.strip()]
+
 # Application definition
 INSTALLED_APPS = [
     "django.contrib.admin",

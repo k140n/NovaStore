@@ -5,8 +5,7 @@ services:
     region: oregon
     plan: free
     buildCommand: "./build.sh"
-    preDeployCommand: "python manage.py migrate"
-    startCommand: "gunicorn config.wsgi:application --bind 0.0.0.0:$PORT --workers 3 --threads 2"
+    startCommand: "python manage.py migrate && gunicorn config.wsgi:application --bind 0.0.0.0:$PORT --workers 3 --threads 2"
     envVars:
       - key: PYTHON_VERSION
         value: 3.12.4

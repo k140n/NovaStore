@@ -51,6 +51,36 @@ def create_mock_image(width, height, text, bg_color=(24, 24, 27), text_color=(24
     return buffer.getvalue()
 
 
+from pathlib import Path
+from django.conf import settings
+
+SEED_IMAGE_DIR = settings.BASE_DIR / "static" / "images" / "seed"
+
+
+def get_image_data_or_mock(seed_filename, width, height, text, bg_color, subtitle="NovaStore"):
+    """
+    Attempt to load high-res photography from static/images/seed.
+    Fallback to elegant Pillow generated mockup if file not found.
+    """
+    seed_path = SEED_IMAGE_DIR / seed_filename
+    if seed_path.exists():
+        with open(seed_path, "rb") as f:
+            return f.read()
+    return create_mock_image(width, height, text, bg_color=bg_color, subtitle=subtitle)
+
+
+def file_is_missing_on_disk(image_field):
+    """
+    Check if the FileField has no file attached OR the physical file is missing from disk.
+    """
+    if not image_field or not image_field.name:
+        return True
+    try:
+        return not image_field.storage.exists(image_field.name)
+    except Exception:
+        return True
+
+
 class Command(BaseCommand):
     help = "Seeds database with initial categories, products, specifications, and banners."
 
@@ -91,14 +121,15 @@ class Command(BaseCommand):
             },
         ]
 
-        for b in banners_data:
+        for idx, b in enumerate(banners_data, start=1):
             color = b.pop("color")
             banner, created = Banner.objects.get_or_create(
                 title=b["title"],
                 defaults={**b},
             )
-            if created or not banner.image:
-                img_data = create_mock_image(1600, 700, b["title"], bg_color=color, subtitle=b["subtitle"])
+            seed_file = f"banner_{idx}.jpg"
+            if created or file_is_missing_on_disk(banner.image):
+                img_data = get_image_data_or_mock(seed_file, 1600, 700, b["title"], bg_color=color, subtitle=b["subtitle"])
                 banner.image.save(f"banner_{banner.id}.jpg", ContentFile(img_data), save=True)
             self.stdout.write(f"  ✓ Banner: {banner.title}")
 
@@ -117,8 +148,9 @@ class Command(BaseCommand):
                 slug=c["slug"],
                 defaults={"name": c["name"], "description": c["desc"], "order": c["order"], "is_active": True},
             )
-            if created or not cat.image:
-                img_data = create_mock_image(600, 400, cat.name, bg_color=(20, 20, 23), subtitle="NovaStore Category")
+            seed_file = f"cat_{cat.slug}.jpg"
+            if created or file_is_missing_on_disk(cat.image):
+                img_data = get_image_data_or_mock(seed_file, 600, 400, cat.name, bg_color=(20, 20, 23), subtitle="NovaStore Category")
                 cat.image.save(f"cat_{cat.slug}.jpg", ContentFile(img_data), save=True)
             category_map[c["slug"]] = cat
             self.stdout.write(f"  ✓ Category: {cat.name}")
@@ -317,8 +349,9 @@ class Command(BaseCommand):
                 slug=p["slug"],
                 defaults={**p},
             )
-            if created or not product.image:
-                img_data = create_mock_image(800, 800, product.name, bg_color=(25, 25, 28), subtitle=product.category.name)
+            seed_file = f"prod_{product.slug}.jpg"
+            if created or file_is_missing_on_disk(product.image):
+                img_data = get_image_data_or_mock(seed_file, 800, 800, product.name, bg_color=(25, 25, 28), subtitle=product.category.name)
                 product.image.save(f"prod_{product.slug}.jpg", ContentFile(img_data), save=True)
 
             # Sync specifications

@@ -120,7 +120,7 @@
 
                 <a href="{{ product.get_absolute_url }}" class="product-card-media-wrap">
                     {% if product.image %}
-                        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-card-image" loading="lazy">
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-card-image" loading="lazy" onerror="this.onerror=null; this.src='{% static 'images/seed/prod_' %}{{ product.slug }}.jpg';">
                     {% else %}
                         <div class="product-img-placeholder">{{ product.name|slice:":2" }}</div>
                     {% endif %}

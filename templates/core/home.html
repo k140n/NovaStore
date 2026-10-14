@@ -37,7 +37,7 @@
 
                         <div class="slide-media">
                             {% if banner.image %}
-                                <img src="{{ banner.image.url }}" alt="{{ banner.title }}" class="slide-img" loading="eager">
+                                <img src="{{ banner.image.url }}" alt="{{ banner.title }}" class="slide-img" loading="eager" onerror="this.onerror=null; this.src='{% static 'images/seed/banner_' %}{{ forloop.counter }}.jpg';">
                             {% else %}
                                 <div class="slide-img-placeholder">
                                     <span>{{ banner.title }}</span>
@@ -96,7 +96,7 @@
                 <a href="{% url 'catalog:category_detail' slug=cat.slug %}" class="category-strip-card">
                     <div class="cat-card-media">
                         {% if cat.image %}
-                            <img src="{{ cat.image.url }}" alt="{{ cat.name }}" class="cat-card-img" loading="lazy">
+                            <img src="{{ cat.image.url }}" alt="{{ cat.name }}" class="cat-card-img" loading="lazy" onerror="this.onerror=null; this.src='{% static 'images/seed/cat_' %}{{ cat.slug }}.jpg';">
                         {% else %}
                             <div class="cat-card-icon">{{ cat.name|slice:":1" }}</div>
                         {% endif %}
@@ -136,7 +136,7 @@
 
                     <a href="{{ product.get_absolute_url }}" class="product-card-media-wrap">
                         {% if product.image %}
-                            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-card-image" loading="lazy">
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-card-image" loading="lazy" onerror="this.onerror=null; this.src='{% static 'images/seed/prod_' %}{{ product.slug }}.jpg';">
                         {% endif %}
                     </a>
 

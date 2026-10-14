@@ -13,9 +13,8 @@ NovaStore is an original, responsive electronics e-commerce web application insp
 - [x] **Milestone 5**: User authentication (register, login, logout, account profile) with Django's secure auth system.
 - [x] **Milestone 6**: Comprehensive automated test suite (models, views, filters, auth, visibility rules).
 - [x] **Milestone 7**: Security audit, accessibility (a11y), responsive design polishing across mobile, tablet, and desktop.
-- [x] **Milestone 7**: Security audit, accessibility (a11y), responsive design polishing across mobile, tablet, and desktop.
 - [x] **Milestone 8**: Production readiness (Gunicorn, WhiteNoise, PostgreSQL support, render deployment config).
-- [ ] **Milestone 9**: Deployment verification, admin seeding, submission checklist.
+- [x] **Milestone 9**: Deployment verification, admin seeding, submission checklist.
 
 ---
 

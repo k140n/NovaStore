@@ -332,4 +332,19 @@ class Command(BaseCommand):
                 )
             self.stdout.write(f"  ✓ Product: {product.name} ({len(specs)} specs)")
 
-        self.stdout.write(self.style.SUCCESS("NovaStore data seeded successfully!"))
+        # 4. Demo Accounts
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
+        if not User.objects.filter(username="admin").exists():
+            User.objects.create_superuser("admin", "admin@novastore.local", "adminpassword123")
+            self.stdout.write("  ✓ Superuser created: admin / adminpassword123")
+        else:
+            self.stdout.write("  ✓ Superuser exists: admin")
+
+        if not User.objects.filter(username="customer").exists():
+            User.objects.create_user("customer", "customer@novastore.local", "customerpassword123", first_name="Alex", last_name="Rivera")
+            self.stdout.write("  ✓ Customer demo account created: customer / customerpassword123")
+        else:
+            self.stdout.write("  ✓ Customer demo account exists: customer")
+
+        self.stdout.write(self.style.SUCCESS("NovaStore demonstration data seeded successfully!"))

@@ -1,4 +1,4 @@
-# NovaStore Production Blueprint - High-Res Photography & Media Enabled
+# NovaStore Production Blueprint - Mobile-Optimized Carousel v1.1
 services:
   - type: web
     name: novastore

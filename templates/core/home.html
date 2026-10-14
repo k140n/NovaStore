@@ -14,10 +14,11 @@
                 <article class="carousel-slide {% if forloop.first %}active{% endif %}" data-index="{{ forloop.counter0 }}">
                     <div class="container slide-content-wrapper">
                         <div class="slide-text">
-                            {% if banner.badge_text %}
-                                <span class="badge-hero">{{ banner.badge_text }}</span>
+                            {% if forloop.first %}
+                                <h1 class="slide-title">{{ banner.title }}</h1>
+                            {% else %}
+                                <h2 class="slide-title">{{ banner.title }}</h2>
                             {% endif %}
-                            <h1 class="slide-title">{{ banner.title }}</h1>
                             {% if banner.subtitle %}
                                 <p class="slide-subtitle">{{ banner.subtitle }}</p>
                             {% endif %}

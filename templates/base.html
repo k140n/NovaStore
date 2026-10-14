@@ -11,10 +11,13 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Main Stylesheet with cache-busting -->
-    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=3.0">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=4.0">
     {% block extra_css %}{% endblock %}
 </head>
 <body class="novastore-body">
+
+    <!-- Accessibility: Skip to Main Content Link -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
 
     <!-- Top Announcement Bar -->
     <aside class="top-announcement" aria-label="Offers announcement">
@@ -88,7 +91,7 @@
                         <circle cx="11" cy="11" r="8"></circle>
                         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                     </svg>
-                    <input type="search" name="q" id="header-search-input" placeholder="Search for products, models, or categories (e.g. NovaBook, Pro, M3)..." autocomplete="off">
+                    <input type="search" name="q" id="header-search-input" placeholder="Search for products, models, or categories (e.g. NovaBook, Pro, M3)..." autocomplete="off" aria-label="Search for products, models, or categories">
                     <button type="button" class="search-close-btn" id="search-close-btn" aria-label="Close search">&times;</button>
                 </form>
                 <div class="search-quick-links">
@@ -105,7 +108,7 @@
         <div class="mobile-nav-drawer" id="mobile-nav-drawer" style="display: none;">
             <div class="mobile-nav-inner">
                 <form action="{% url 'catalog:product_list' %}" method="get" class="mobile-search-form">
-                    <input type="search" name="q" placeholder="Search products..." class="mobile-search-input">
+                    <input type="search" name="q" placeholder="Search products..." class="mobile-search-input" aria-label="Search products">
                     <button type="submit" class="btn btn-sm btn-primary">Search</button>
                 </form>
 

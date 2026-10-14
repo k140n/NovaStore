@@ -191,3 +191,34 @@ class CoreEdgeCasesAndAdminTest(TestCase):
         response = self.client.get("/admin/core/banner/")
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "NovaStore Administration")
+
+
+class SecurityAndAccessibilityTest(TestCase):
+    def test_security_headers_present(self):
+        """Responses must include clickjacking and MIME-sniffing prevention headers."""
+        response = self.client.get(reverse("core:home"))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.headers.get("X-Content-Type-Options"), "nosniff")
+        self.assertEqual(response.headers.get("X-Frame-Options"), "DENY")
+
+    def test_skip_link_rendered(self):
+        """A keyboard-accessible skip-to-content link must be present on page."""
+        response = self.client.get(reverse("core:home"))
+        self.assertContains(response, '<a href="#main-content" class="skip-link">Skip to main content</a>')
+
+    def test_csrf_token_on_auth_forms(self):
+        """Authentication forms must include CSRF tokens for security."""
+        reg_response = self.client.get(reverse("accounts:register"))
+        self.assertContains(reg_response, "csrfmiddlewaretoken")
+
+        login_response = self.client.get(reverse("accounts:login"))
+        self.assertContains(login_response, "csrfmiddlewaretoken")
+
+    def test_heading_structure_single_h1_on_home(self):
+        """Home page should maintain a single primary <h1> element for WCAG compliance."""
+        response = self.client.get(reverse("core:home"))
+        self.assertEqual(response.status_code, 200)
+        content = response.content.decode("utf-8")
+        h1_count = content.count("<h1")
+        self.assertEqual(h1_count, 1)
+

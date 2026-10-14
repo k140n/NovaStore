@@ -64,6 +64,39 @@ body.novastore-body {
     overflow-x: hidden;
 }
 
+/* Accessibility: Skip to Main Content */
+.skip-link {
+    position: absolute;
+    top: -60px;
+    left: 20px;
+    background: var(--accent);
+    color: #ffffff;
+    padding: 10px 18px;
+    font-weight: 600;
+    font-size: 14px;
+    border-radius: var(--radius-sm);
+    z-index: 99999;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+    transition: top 0.2s ease-in-out;
+    text-decoration: none;
+}
+
+.skip-link:focus {
+    top: 16px;
+    outline: 3px solid #ffffff;
+    outline-offset: 2px;
+}
+
+/* Accessibility: Accessible Keyboard Focus Visible */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
 a {
     color: inherit;
     text-decoration: none;
@@ -2185,6 +2218,17 @@ button {
     }
 }
 
+@media (max-width: 900px) {
+    .account-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+
+    .account-sidebar {
+        position: static;
+    }
+}
+
 @media (max-width: 540px) {
     .container {
         padding: 0 16px;
@@ -2197,9 +2241,48 @@ button {
     .footer-bottom-bar {
         flex-direction: column;
         align-items: flex-start;
+        gap: 12px;
     }
 
     .carousel-control {
         display: none;
     }
+
+    .product-detail-layout {
+        gap: 24px;
+    }
+
+    .detail-actions-panel {
+        flex-direction: column;
+    }
+
+    .detail-actions-panel .btn {
+        width: 100%;
+    }
 }
+
+/* Touch Target Minimum Sizes (WCAG 2.1 AA) */
+@media (pointer: coarse) {
+    .btn,
+    .nav-icon-btn,
+    .nav-link,
+    .filter-pill,
+    .carousel-dot {
+        min-height: 44px;
+        min-width: 44px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+/* Accessibility: User Prefers Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+

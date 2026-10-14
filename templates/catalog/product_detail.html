@@ -1,73 +1,203 @@
 {% extends "base.html" %}
+{% load static %}
 
-{% block title %}{{ product.name }} — NovaStore{% endblock %}
+{% block title %}{{ product.name }} — Buy at NovaStore (India){% endblock %}
 
 {% block content %}
 <div class="container section-spacing">
-    <div class="breadcrumb">
-        <a href="{% url 'core:home' %}">Home</a> &rsaquo;
-        <a href="{% url 'catalog:product_list' %}">Store</a> &rsaquo;
-        <a href="{% url 'catalog:category_detail' slug=product.category.slug %}">{{ product.category.name }}</a> &rsaquo;
-        <span>{{ product.name }}</span>
-    </div>
 
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="{% url 'core:home' %}">Home</a>
+        <span class="sep">&rsaquo;</span>
+        <a href="{% url 'catalog:product_list' %}">Store</a>
+        <span class="sep">&rsaquo;</span>
+        <a href="{% url 'catalog:product_list' %}?category={{ product.category.slug }}">{{ product.category.name }}</a>
+        <span class="sep">&rsaquo;</span>
+        <span class="current">{{ product.name }}</span>
+    </nav>
+
+    <!-- Product Main Showcase -->
     <div class="product-detail-layout">
-        <div class="product-detail-gallery">
-            {% if product.image %}
-                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-hero-image">
-            {% endif %}
+        <!-- Left: Product Media Gallery -->
+        <div class="product-gallery-wrap">
+            <div class="gallery-primary-card">
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="detail-hero-img">
+                {% endif %}
+            </div>
+            <div class="gallery-caption">
+                <span>Authentic NovaStore Official Product &bull; Sealed Packaging &bull; 1-Year Warranty</span>
+            </div>
         </div>
 
-        <div class="product-detail-meta">
-            {% if product.is_featured %}
-                <span class="badge-tag">Flagship</span>
-            {% endif %}
+        <!-- Right: Purchasing Meta & Highlights -->
+        <div class="product-meta-panel">
+            <div class="meta-tag-row">
+                {% if product.discount_percent > 0 %}
+                    <span class="product-discount-pill">{{ product.discount_percent }}% INSTANT SAVINGS</span>
+                {% elif product.is_featured %}
+                    <span class="product-flagship-pill">NovaStore Flagship</span>
+                {% endif %}
+                <span class="product-category-text">{{ product.category.name }}</span>
+            </div>
+
             <h1 class="detail-title">{{ product.name }}</h1>
+
             {% if product.tagline %}
                 <p class="detail-tagline">{{ product.tagline }}</p>
             {% endif %}
 
-            <div class="detail-price-box">
-                <span class="detail-price">{{ product.formatted_price }}</span>
-                {% if product.formatted_original_price %}
-                    <span class="detail-original-price"><del>{{ product.formatted_original_price }}</del></span>
-                    <span class="detail-discount-tag">{{ product.discount_percent }}% OFF</span>
-                {% endif %}
-                <p class="tax-info">MRP incl. of all taxes. Free delivery and 1-year NovaStore warranty.</p>
+            <!-- Pricing Box -->
+            <div class="detail-pricing-box">
+                <div class="detail-price-row">
+                    <span class="detail-price">{{ product.formatted_price }}</span>
+                    {% if product.formatted_original_price %}
+                        <span class="detail-mrp">MRP <del>{{ product.formatted_original_price }}</del></span>
+                        <span class="savings-amount">Save {{ product.discount_percent }}%</span>
+                    {% endif %}
+                </div>
+                <p class="detail-tax-note">Inclusive of all taxes &bull; Free express shipping across India</p>
+                <div class="emi-pill-box">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+                        <line x1="2" y1="10" x2="22" y2="10"></line>
+                    </svg>
+                    <span>No Cost EMI available up to 12 months on eligible credit cards.</span>
+                </div>
             </div>
 
-            <div class="detail-stock-status">
+            <!-- Stock Availability -->
+            <div class="stock-status-bar">
                 {% if product.stock > 0 %}
-                    <span class="stock-badge in-stock">&bull; In Stock & Ready to Ship</span>
+                    <span class="status-indicator in-stock">
+                        <span class="pulse-dot"></span> In Stock ({{ product.stock }} units ready to ship)
+                    </span>
                 {% else %}
-                    <span class="stock-badge out-of-stock">&bull; Currently Unavailable</span>
+                    <span class="status-indicator out-of-stock">
+                        <span class="pulse-dot red"></span> Currently Out of Stock
+                    </span>
                 {% endif %}
             </div>
 
-            <div class="detail-description">
-                <h3>Overview</h3>
+            <!-- Description -->
+            <div class="detail-overview">
+                <h3>Product Overview</h3>
                 <p>{{ product.description }}</p>
             </div>
 
-            {% if product.specifications.all %}
-                <div class="detail-specs-box">
-                    <h3>Technical Specifications</h3>
-                    <dl class="specs-grid">
-                        {% for spec in product.specifications.all %}
-                            <div class="spec-row">
-                                <dt>{{ spec.name }}</dt>
-                                <dd>{{ spec.value }}</dd>
-                            </div>
-                        {% endfor %}
-                    </dl>
-                </div>
-            {% endif %}
+            <!-- Action Buttons -->
+            <div class="detail-actions-panel">
+                {% if product.stock > 0 %}
+                    <a href="#order-confirmation" class="btn btn-primary btn-lg btn-buy-now">
+                        Buy Now &bull; {{ product.formatted_price }}
+                    </a>
+                {% else %}
+                    <button type="button" class="btn btn-secondary btn-lg" disabled>Sold Out</button>
+                {% endif %}
+                <a href="{% url 'catalog:product_list' %}" class="btn btn-secondary btn-lg">
+                    Back to Store
+                </a>
+            </div>
 
-            <div class="detail-actions">
-                <a href="#order-inquiry" class="btn btn-primary btn-lg">Add to Bag</a>
-                <a href="{% url 'catalog:product_list' %}" class="btn btn-secondary">Explore More</a>
+            <!-- Store Guarantee Perks -->
+            <div class="detail-perks-list">
+                <div class="perk-item">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+                    <span>Free delivery across India within 2-4 business days</span>
+                </div>
+                <div class="perk-item">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                    <span>Official 1-Year Brand Warranty with certified servicing</span>
+                </div>
+                <div class="perk-item">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                    <span>Eligible for NovaStore Trade-in Credit (up to ₹65,000)</span>
+                </div>
             </div>
         </div>
     </div>
+
+    <!-- Technical Specifications Breakdown -->
+    {% if specifications %}
+        <section class="technical-specs-section" id="tech-specs">
+            <div class="specs-header">
+                <span class="section-tag">Engineering Specifications</span>
+                <h2 class="specs-title">Technical Deep Dive</h2>
+                <p class="specs-subtitle">Detailed hardware architecture and technical configurations.</p>
+            </div>
+
+            <div class="specs-table-card">
+                <dl class="specs-definition-list">
+                    {% for spec in specifications %}
+                        <div class="specs-definition-row">
+                            <dt class="spec-label">{{ spec.name }}</dt>
+                            <dd class="spec-value">{{ spec.value }}</dd>
+                        </div>
+                    {% endfor %}
+                </dl>
+            </div>
+        </section>
+    {% endif %}
+
+    <!-- Related Products Lineup -->
+    {% if related_products %}
+        <section class="related-products-section">
+            <div class="section-header-flex">
+                <div>
+                    <span class="section-tag">Similar Innovations</span>
+                    <h2 class="section-title">Explore more in {{ product.category.name }}</h2>
+                </div>
+                <a href="{% url 'catalog:product_list' %}?category={{ product.category.slug }}" class="section-link">
+                    View all {{ product.category.name|lower }} &rsaquo;
+                </a>
+            </div>
+
+            <div class="featured-products-grid">
+                {% for related in related_products %}
+                    <article class="product-card">
+                        <div class="card-badge-row">
+                            {% if related.discount_percent > 0 %}
+                                <span class="product-discount-pill">{{ related.discount_percent }}% SAVINGS</span>
+                            {% elif related.is_featured %}
+                                <span class="product-flagship-pill">Featured</span>
+                            {% else %}
+                                <span></span>
+                            {% endif %}
+                            <span class="product-category-text">{{ related.category.name }}</span>
+                        </div>
+
+                        <a href="{{ related.get_absolute_url }}" class="product-card-media-wrap">
+                            {% if related.image %}
+                                <img src="{{ related.image.url }}" alt="{{ related.name }}" class="product-card-image" loading="lazy">
+                            {% endif %}
+                        </a>
+
+                        <div class="product-card-content">
+                            <h3 class="product-card-title">
+                                <a href="{{ related.get_absolute_url }}">{{ related.name }}</a>
+                            </h3>
+                            {% if related.tagline %}
+                                <p class="product-card-tagline">{{ related.tagline }}</p>
+                            {% endif %}
+
+                            <div class="product-pricing">
+                                <div class="price-main">{{ related.formatted_price }}</div>
+                                {% if related.formatted_original_price %}
+                                    <div class="price-mrp">MRP <del>{{ related.formatted_original_price }}</del></div>
+                                {% endif %}
+                            </div>
+
+                            <div class="card-button-group">
+                                <a href="{{ related.get_absolute_url }}" class="btn btn-sm btn-primary">Buy Now</a>
+                                <a href="{{ related.get_absolute_url }}" class="btn-text-link">Details &rsaquo;</a>
+                            </div>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+        </section>
+    {% endif %}
+
 </div>
 {% endblock %}

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}404 — Page Not Found — NovaStore{% endblock %}
+
+{% block content %}
+<div class="container section-spacing">
+    <div class="error-page-card">
+        <span class="error-code-badge">404 Error</span>
+        <h1 class="error-title">The page you're looking for can't be found.</h1>
+        <p class="error-subtitle">
+            The link you followed may be broken, or the product may have been discontinued or moved.
+        </p>
+
+        <!-- Search Bar within 404 -->
+        <form action="{% url 'catalog:product_list' %}" method="get" class="error-search-form">
+            <input type="search" name="q" placeholder="Search the NovaStore catalogue..." class="error-search-input">
+            <button type="submit" class="btn btn-primary">Search</button>
+        </form>
+
+        <div class="error-nav-links">
+            <span>Or explore our popular sections:</span>
+            <div class="error-links-row">
+                <a href="{% url 'core:home' %}" class="btn btn-secondary btn-sm">Home</a>
+                <a href="{% url 'catalog:product_list' %}" class="btn btn-secondary btn-sm">All Products</a>
+                {% for cat in nav_categories %}
+                    <a href="{% url 'catalog:category_detail' slug=cat.slug %}" class="btn btn-secondary btn-sm">{{ cat.name }}</a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

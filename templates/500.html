@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}500 — Server Error — NovaStore{% endblock %}
+
+{% block content %}
+<div class="container section-spacing">
+    <div class="error-page-card">
+        <span class="error-code-badge">500 Error</span>
+        <h1 class="error-title">We are experiencing technical difficulties.</h1>
+        <p class="error-subtitle">
+            Please refresh the page in a few moments, or return to the storefront.
+        </p>
+        <div class="error-actions" style="margin-top: 24px;">
+            <a href="{% url 'core:home' %}" class="btn btn-primary">Return to NovaStore Home</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

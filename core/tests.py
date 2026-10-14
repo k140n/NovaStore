@@ -152,3 +152,42 @@ class BannerModelTest(TestCase):
     def test_banner_image_preview_methods(self):
         self.assertIn("<img", self.active_banner_0.image_preview_thumb())
         self.assertIn("<img", self.active_banner_0.image_preview_large())
+
+
+class CoreEdgeCasesAndAdminTest(TestCase):
+    def setUp(self):
+        self.admin_user = User.objects.create_superuser(
+            username="testadmin",
+            email="admin@novastore.local",
+            password="AdminPassword123!",
+        )
+
+    def test_home_page_empty_database_renders_gracefully(self):
+        """Home page must render cleanly with HTTP 200 even with an empty database."""
+        Banner.objects.all().delete()
+        Category.objects.all().delete()
+        Product.objects.all().delete()
+        response = self.client.get(reverse("core:home"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "NovaStore")
+
+    def test_custom_404_preview_page(self):
+        """Custom 404 page renders branded Apple-style layout."""
+        response = self.client.get("/404/")
+        self.assertEqual(response.status_code, 404)
+        self.assertTemplateUsed(response, "404.html")
+        self.assertContains(response, "The page you're looking for can't be found.", status_code=404)
+
+    def test_custom_500_preview_page(self):
+        """Custom 500 page renders branded Apple-style layout."""
+        response = self.client.get("/500/")
+        self.assertEqual(response.status_code, 500)
+        self.assertTemplateUsed(response, "500.html")
+        self.assertContains(response, "We are experiencing technical difficulties.", status_code=500)
+
+    def test_banner_admin_crud_access(self):
+        """Staff/admin can access Banner change list in Django Admin."""
+        self.client.login(username="testadmin", password="AdminPassword123!")
+        response = self.client.get("/admin/core/banner/")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "NovaStore Administration")

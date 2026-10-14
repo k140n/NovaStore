@@ -14,11 +14,14 @@ urlpatterns = [
     path("accounts/", include("accounts.urls")),
 ]
 
-# Serve media files and allow testing custom error templates in local development
+from django.views import defaults as default_views
+
+# Preview routes for custom error pages
+urlpatterns += [
+    path("404/", default_views.page_not_found, kwargs={"exception": Exception("Page not Found")}),
+    path("500/", default_views.server_error),
+]
+
+# Serve media files in local development
 if settings.DEBUG:
-    from django.views import defaults as default_views
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-    urlpatterns += [
-        path("404/", default_views.page_not_found, kwargs={"exception": Exception("Page not Found")}),
-        path("500/", default_views.server_error),
-    ]

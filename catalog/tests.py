@@ -1,8 +1,13 @@
 from decimal import Decimal
+from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import TestCase
+from django.db import IntegrityError
+from django.test import RequestFactory, TestCase
 from django.urls import reverse
+from catalog.context_processors import category_navigation
 from .models import Category, Product, ProductSpecification
+
+User = get_user_model()
 
 
 class CategoryModelTest(TestCase):
@@ -48,6 +53,11 @@ class CategoryModelTest(TestCase):
         )
         # Only active products should count
         self.assertEqual(self.category.product_count(), 1)
+
+    def test_category_unique_slug_enforced(self):
+        """Database IntegrityError raised if slug is duplicate."""
+        with self.assertRaises(IntegrityError):
+            Category.objects.create(name="Another Laptops", slug="laptops")
 
 
 class ProductModelTest(TestCase):
@@ -99,14 +109,51 @@ class ProductModelTest(TestCase):
         self.assertIn(self.product, featured_products)
         self.assertNotIn(self.inactive_product, featured_products)
 
+    def test_product_unique_slug_enforced(self):
+        """Database IntegrityError raised if product slug is duplicate."""
+        with self.assertRaises(IntegrityError):
+            Product.objects.create(
+                category=self.category,
+                name="Duplicate Slug Device",
+                slug="novaphone-16-pro",
+                price=Decimal("999.00"),
+                image=self.test_image,
+            )
+
     def test_price_formatting_indian_rupee(self):
         self.assertEqual(self.product.formatted_price, "₹1,34,900")
         self.assertEqual(self.product.formatted_original_price, "₹1,44,900")
 
+    def test_price_formatting_various_denominations(self):
+        """Test Indian currency comma system for hundreds, thousands, and lakhs."""
+        p1 = Product(category=self.category, name="P1", slug="p1", price=Decimal("499.00"))
+        self.assertEqual(p1.formatted_price, "₹499")
+
+        p2 = Product(category=self.category, name="P2", slug="p2", price=Decimal("1499.00"))
+        self.assertEqual(p2.formatted_price, "₹1,499")
+
+        p3 = Product(category=self.category, name="P3", slug="p3", price=Decimal("49999.00"))
+        self.assertEqual(p3.formatted_price, "₹49,999")
+
+        p4 = Product(category=self.category, name="P4", slug="p4", price=Decimal("1549900.00"))
+        self.assertEqual(p4.formatted_price, "₹15,49,900")
+
     def test_discount_calculation(self):
         self.assertEqual(self.product.discount_percent, 7)
 
-    def test_product_specifications_relationship(self):
+    def test_discount_calculation_edge_cases(self):
+        """Discount should be 0 when no original_price or original_price <= price."""
+        p_no_orig = Product(category=self.category, name="NoOrig", slug="no-orig", price=Decimal("50000.00"))
+        self.assertEqual(p_no_orig.discount_percent, 0)
+        self.assertIsNone(p_no_orig.formatted_original_price)
+
+        p_equal = Product(category=self.category, name="Equal", slug="equal", price=Decimal("50000.00"), original_price=Decimal("50000.00"))
+        self.assertEqual(p_equal.discount_percent, 0)
+
+        p_cheaper_orig = Product(category=self.category, name="CheapOrig", slug="cheap-orig", price=Decimal("50000.00"), original_price=Decimal("40000.00"))
+        self.assertEqual(p_cheaper_orig.discount_percent, 0)
+
+    def test_product_specifications_relationship_and_str(self):
         spec1 = ProductSpecification.objects.create(
             product=self.product,
             name="Chip",
@@ -119,10 +166,20 @@ class ProductModelTest(TestCase):
             value="6.7-inch Super Retina XDR",
             order=2,
         )
+        self.assertEqual(str(spec1), "Chip: NovaSilicon A18 Pro")
         self.assertEqual(self.product.specifications.count(), 2)
         specs = list(self.product.specifications.all())
         self.assertEqual(specs[0].name, "Chip")
         self.assertEqual(specs[1].name, "Display")
+
+    def test_image_preview_helpers(self):
+        """Test image preview HTML tags and fallback text when image is missing."""
+        self.assertIn("<img", self.product.image_preview_thumb())
+        self.assertIn("<img", self.product.image_preview_large())
+
+        p_no_img = Product(category=self.category, name="NoImg", slug="no-img", price=Decimal("100.00"))
+        self.assertEqual(p_no_img.image_preview_thumb(), "No Image")
+        self.assertEqual(p_no_img.image_preview_large(), "No Image Uploaded")
 
 
 class CatalogViewsTest(TestCase):
@@ -242,3 +299,177 @@ class CatalogViewsTest(TestCase):
         response = self.client.get(reverse("catalog:category_detail", kwargs={"slug": "laptops"}))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "NovaBook Pro 16")
+
+    def test_product_list_sorting_price_high(self):
+        """Verify sort=price_high returns most expensive products first."""
+        response = self.client.get(reverse("catalog:product_list") + "?sort=price_high")
+        self.assertEqual(response.status_code, 200)
+        products = list(response.context["products"])
+        self.assertEqual(products[0], self.laptop)  # ₹2,49,900
+        self.assertEqual(products[1], self.audio)   # ₹59,900
+
+    def test_product_list_sorting_featured(self):
+        """Verify sort=featured places featured products first."""
+        response = self.client.get(reverse("catalog:product_list") + "?sort=featured")
+        self.assertEqual(response.status_code, 200)
+        products = list(response.context["products"])
+        self.assertTrue(products[0].is_featured)
+
+    def test_product_list_pagination_multiple_pages(self):
+        """Verify 6-per-page pagination handles multiple pages accurately."""
+        # Create 7 extra laptops (total 8 laptops in cat_laptops)
+        for i in range(7):
+            Product.objects.create(
+                category=self.cat_laptops,
+                name=f"NovaBook Mini {i}",
+                slug=f"novabook-mini-{i}",
+                price=Decimal("69900.00"),
+                image=self.test_img,
+                is_active=True,
+            )
+        # Page 1 should contain 6 items
+        resp1 = self.client.get(reverse("catalog:product_list") + "?category=laptops&page=1")
+        self.assertEqual(resp1.status_code, 200)
+        self.assertEqual(len(resp1.context["products"]), 6)
+        self.assertTrue(resp1.context["products"].has_next())
+
+        # Page 2 should contain the remaining 2 items
+        resp2 = self.client.get(reverse("catalog:product_list") + "?category=laptops&page=2")
+        self.assertEqual(resp2.status_code, 200)
+        self.assertEqual(len(resp2.context["products"]), 2)
+        self.assertFalse(resp2.context["products"].has_next())
+
+    def test_product_list_pagination_invalid_page_falls_back(self):
+        """Invalid page parameter gracefully defaults to page 1."""
+        response = self.client.get(reverse("catalog:product_list") + "?page=not-a-number")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["products"].number, 1)
+
+    def test_product_list_pagination_out_of_range_delivers_last(self):
+        """Page number beyond total pages delivers the final page."""
+        response = self.client.get(reverse("catalog:product_list") + "?page=9999")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["products"].number, 1)
+
+    def test_product_list_search_description_and_tagline(self):
+        """Search query matches against product description and tagline text."""
+        # Match by description keyword
+        resp_desc = self.client.get(reverse("catalog:product_list") + "?q=workstation")
+        self.assertContains(resp_desc, "NovaBook Pro 16")
+        self.assertNotContains(resp_desc, "NovaPods Max")
+
+        # Match by tagline keyword
+        resp_tag = self.client.get(reverse("catalog:product_list") + "?q=Extreme")
+        self.assertContains(resp_tag, "NovaBook Pro 16")
+
+    def test_product_list_search_whitespace_trimmed(self):
+        """Search handles leading and trailing whitespace cleanly."""
+        response = self.client.get(reverse("catalog:product_list") + "?q=   NovaPods   ")
+        self.assertContains(response, "NovaPods Max")
+
+    def test_product_list_search_no_results_empty_state(self):
+        """Search yielding zero results renders empty state message."""
+        response = self.client.get(reverse("catalog:product_list") + "?q=NonExistentGadgetXYZ")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["products"]), 0)
+        self.assertContains(response, "No matching products found")
+
+    def test_product_detail_related_products_logic(self):
+        """Related products section displays up to 4 active products from same category, excluding self."""
+        # Create second active laptop
+        laptop2 = Product.objects.create(
+            category=self.cat_laptops,
+            name="NovaBook Air 13",
+            slug="novabook-air-13",
+            price=Decimal("99900.00"),
+            image=self.test_img,
+            is_active=True,
+        )
+        response = self.client.get(reverse("catalog:product_detail", kwargs={"slug": self.laptop.slug}))
+        self.assertEqual(response.status_code, 200)
+        related = list(response.context["related_products"])
+        self.assertIn(laptop2, related)
+        self.assertNotIn(self.laptop, related)          # Must exclude self
+        self.assertNotIn(self.inactive_item, related)   # Must exclude inactive
+        self.assertNotIn(self.audio, related)           # Must exclude other categories
+
+    def test_categories_context_processor(self):
+        """Global context processor supplies active categories ordered by order."""
+        request = RequestFactory().get("/")
+        data = category_navigation(request)
+        self.assertIn("nav_categories", data)
+        cats = list(data["nav_categories"])
+        self.assertIn(self.cat_laptops, cats)
+        self.assertIn(self.cat_audio, cats)
+
+
+class CatalogAdminAndVisibilityTest(TestCase):
+    def setUp(self):
+        self.admin_user = User.objects.create_superuser(
+            username="catalogadmin",
+            email="admin@novastore.local",
+            password="AdminPassword123!",
+        )
+        small_gif = (
+            b"\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x80\x00\x00\xff\xff\xff"
+            b"\x00\x00\x00\x21\xf9\x04\x01\x00\x00\x00\x00\x2c\x00\x00\x00\x00"
+            b"\x01\x00\x01\x00\x00\x02\x02\x44\x01\x00\x3b"
+        )
+        self.test_img = SimpleUploadedFile("test_cat.gif", small_gif, content_type="image/gif")
+        self.category = Category.objects.create(name="Tablets", slug="tablets", order=1, is_active=True)
+
+    def test_catalog_admin_access_for_staff(self):
+        """Staff/superusers can access Product and Category changelists in Admin."""
+        self.client.login(username="catalogadmin", password="AdminPassword123!")
+        cat_resp = self.client.get("/admin/catalog/category/")
+        self.assertEqual(cat_resp.status_code, 200)
+        self.assertContains(cat_resp, "Tablets")
+
+        prod_resp = self.client.get("/admin/catalog/product/")
+        self.assertEqual(prod_resp.status_code, 200)
+
+    def test_active_inactive_full_visibility_lifecycle(self):
+        """
+        Verify end-to-end visibility lifecycle:
+        1. When active: appears in catalog, search, and detail page loads HTTP 200.
+        2. When toggled to inactive: immediately disappears from catalog and search, detail returns HTTP 404.
+        3. When reactivated: immediately reappears on all public views.
+        """
+        product = Product.objects.create(
+            category=self.category,
+            name="NovaPad Ultra Experimental",
+            slug="novapad-ultra-experimental",
+            tagline="Next-gen display",
+            description="Quantum dot OLED tablet with M3 chip.",
+            price=Decimal("89900.00"),
+            image=self.test_img,
+            is_active=True,
+        )
+
+        # 1. Active State
+        catalog_res = self.client.get(reverse("catalog:product_list"))
+        self.assertContains(catalog_res, "NovaPad Ultra Experimental")
+        search_res = self.client.get(reverse("catalog:product_list") + "?q=Quantum")
+        self.assertContains(search_res, "NovaPad Ultra Experimental")
+        detail_res = self.client.get(reverse("catalog:product_detail", kwargs={"slug": product.slug}))
+        self.assertEqual(detail_res.status_code, 200)
+
+        # 2. Inactivate
+        product.is_active = False
+        product.save()
+
+        catalog_res2 = self.client.get(reverse("catalog:product_list"))
+        self.assertNotContains(catalog_res2, "NovaPad Ultra Experimental")
+        search_res2 = self.client.get(reverse("catalog:product_list") + "?q=Quantum")
+        self.assertNotContains(search_res2, "NovaPad Ultra Experimental")
+        detail_res2 = self.client.get(reverse("catalog:product_detail", kwargs={"slug": product.slug}))
+        self.assertEqual(detail_res2.status_code, 404)
+
+        # 3. Reactivate
+        product.is_active = True
+        product.save()
+
+        catalog_res3 = self.client.get(reverse("catalog:product_list"))
+        self.assertContains(catalog_res3, "NovaPad Ultra Experimental")
+        detail_res3 = self.client.get(reverse("catalog:product_detail", kwargs={"slug": product.slug}))
+        self.assertEqual(detail_res3.status_code, 200)

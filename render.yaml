@@ -5,6 +5,7 @@ services:
     region: oregon
     plan: free
     buildCommand: "./build.sh"
+    preDeployCommand: "python manage.py migrate"
     startCommand: "gunicorn config.wsgi:application --bind 0.0.0.0:$PORT --workers 3 --threads 2"
     envVars:
       - key: PYTHON_VERSION
@@ -14,7 +15,7 @@ services:
       - key: DEBUG
         value: "False"
       - key: ALLOWED_HOSTS
-        value: ".onrender.com"
+        value: ".onrender.com,localhost,127.0.0.1"
       - key: CSRF_TRUSTED_ORIGINS
         value: "https://*.onrender.com"
       - key: DATABASE_URL
@@ -24,6 +25,7 @@ services:
 
 databases:
   - name: novastore-db
+    region: oregon
     plan: free
     databaseName: novastore
     user: novastore_user

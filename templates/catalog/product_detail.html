@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }} — NovaStore{% endblock %}
+
+{% block content %}
+<div class="container section-spacing">
+    <div class="breadcrumb">
+        <a href="{% url 'core:home' %}">Home</a> &rsaquo;
+        <a href="{% url 'catalog:product_list' %}">Store</a> &rsaquo;
+        <a href="{% url 'catalog:category_detail' slug=product.category.slug %}">{{ product.category.name }}</a> &rsaquo;
+        <span>{{ product.name }}</span>
+    </div>
+
+    <div class="product-detail-layout">
+        <div class="product-detail-gallery">
+            {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-hero-image">
+            {% endif %}
+        </div>
+
+        <div class="product-detail-meta">
+            {% if product.is_featured %}
+                <span class="badge-tag">Flagship</span>
+            {% endif %}
+            <h1 class="detail-title">{{ product.name }}</h1>
+            {% if product.tagline %}
+                <p class="detail-tagline">{{ product.tagline }}</p>
+            {% endif %}
+
+            <div class="detail-price-box">
+                <span class="detail-price">{{ product.formatted_price }}</span>
+                {% if product.formatted_original_price %}
+                    <span class="detail-original-price"><del>{{ product.formatted_original_price }}</del></span>
+                    <span class="detail-discount-tag">{{ product.discount_percent }}% OFF</span>
+                {% endif %}
+                <p class="tax-info">MRP incl. of all taxes. Free delivery and 1-year NovaStore warranty.</p>
+            </div>
+
+            <div class="detail-stock-status">
+                {% if product.stock > 0 %}
+                    <span class="stock-badge in-stock">&bull; In Stock & Ready to Ship</span>
+                {% else %}
+                    <span class="stock-badge out-of-stock">&bull; Currently Unavailable</span>
+                {% endif %}
+            </div>
+
+            <div class="detail-description">
+                <h3>Overview</h3>
+                <p>{{ product.description }}</p>
+            </div>
+
+            {% if product.specifications.all %}
+                <div class="detail-specs-box">
+                    <h3>Technical Specifications</h3>
+                    <dl class="specs-grid">
+                        {% for spec in product.specifications.all %}
+                            <div class="spec-row">
+                                <dt>{{ spec.name }}</dt>
+                                <dd>{{ spec.value }}</dd>
+                            </div>
+                        {% endfor %}
+                    </dl>
+                </div>
+            {% endif %}
+
+            <div class="detail-actions">
+                <a href="#order-inquiry" class="btn btn-primary btn-lg">Add to Bag</a>
+                <a href="{% url 'catalog:product_list' %}" class="btn btn-secondary">Explore More</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

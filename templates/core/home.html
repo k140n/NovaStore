@@ -1,48 +1,282 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}NovaStore — Next-Generation Electronics Store{% endblock %}
+{% block title %}NovaStore (India) — Experience Cutting-Edge Electronics{% endblock %}
 
 {% block content %}
-<section class="hero-welcome">
-    <div class="container hero-inner">
-        <span class="badge-tag">Milestone 1 Active</span>
-        <h1 class="hero-title">Engineering the Future of Electronics</h1>
-        <p class="hero-subtitle">
-            Welcome to <strong>NovaStore</strong>. Built with Django 5.2 LTS, modern styling, and high-performance architecture.
-        </p>
-        <div class="hero-actions">
-            <a href="/admin/" class="btn btn-primary">Go to Django Admin</a>
-            <a href="#milestone-info" class="btn btn-secondary">System Status</a>
+<!-- =========================================================================
+     1. HERO DYNAMIC BANNER CAROUSEL
+     ========================================================================= -->
+<section class="hero-carousel-section" aria-label="Featured promotions">
+    <div class="carousel-container" id="hero-carousel">
+        <div class="carousel-track" id="carousel-track">
+            {% for banner in banners %}
+                <article class="carousel-slide {% if forloop.first %}active{% endif %}" data-index="{{ forloop.counter0 }}">
+                    <div class="container slide-content-wrapper">
+                        <div class="slide-text">
+                            {% if banner.badge_text %}
+                                <span class="badge-hero">{{ banner.badge_text }}</span>
+                            {% endif %}
+                            <h1 class="slide-title">{{ banner.title }}</h1>
+                            {% if banner.subtitle %}
+                                <p class="slide-subtitle">{{ banner.subtitle }}</p>
+                            {% endif %}
+                            {% if banner.description %}
+                                <p class="slide-desc">{{ banner.description }}</p>
+                            {% endif %}
+                            <div class="slide-actions">
+                                <a href="{{ banner.button_link }}" class="btn btn-primary btn-lg">
+                                    {{ banner.button_text|default:"Learn More" }}
+                                </a>
+                                <a href="{% url 'catalog:product_list' %}" class="btn btn-secondary btn-lg">
+                                    View Store
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="slide-media">
+                            {% if banner.image %}
+                                <img src="{{ banner.image.url }}" alt="{{ banner.title }}" class="slide-img" loading="eager">
+                            {% else %}
+                                <div class="slide-img-placeholder">
+                                    <span>{{ banner.title }}</span>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </article>
+            {% empty %}
+                <!-- Fallback if no banner seeded -->
+                <article class="carousel-slide active" data-index="0">
+                    <div class="container slide-content-wrapper">
+                        <div class="slide-text">
+                            <span class="badge-hero">New Release</span>
+                            <h1 class="slide-title">NovaBook Pro 16</h1>
+                            <p class="slide-subtitle">Mind-blowing. Head-turning. Extreme performance.</p>
+                            <div class="slide-actions">
+                                <a href="{% url 'catalog:product_list' %}" class="btn btn-primary btn-lg">Explore Store</a>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+
+        {% if banners|length > 1 %}
+            <!-- Carousel Navigation Dots -->
+            <div class="carousel-indicators" id="carousel-indicators" aria-label="Banner indicators">
+                {% for banner in banners %}
+                    <button type="button" class="carousel-dot {% if forloop.first %}active{% endif %}" data-slide="{{ forloop.counter0 }}" aria-label="Go to banner {{ forloop.counter }}"></button>
+                {% endfor %}
+            </div>
+
+            <!-- Carousel Prev/Next Buttons -->
+            <button type="button" class="carousel-control prev" id="carousel-prev-btn" aria-label="Previous banner">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </button>
+            <button type="button" class="carousel-control next" id="carousel-next-btn" aria-label="Next banner">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </button>
+        {% endif %}
+    </div>
+</section>
+
+<!-- =========================================================================
+     2. CATEGORY QUICK-NAV RIBBON
+     ========================================================================= -->
+<section class="category-ribbon-section">
+    <div class="container">
+        <div class="ribbon-header">
+            <span class="section-tag">Browse by Category</span>
+            <h2 class="ribbon-title">Explore the NovaStore Lineup</h2>
+        </div>
+        <div class="category-strip" id="category-strip">
+            {% for cat in categories %}
+                <a href="{% url 'catalog:category_detail' slug=cat.slug %}" class="category-strip-card">
+                    <div class="cat-card-media">
+                        {% if cat.image %}
+                            <img src="{{ cat.image.url }}" alt="{{ cat.name }}" class="cat-card-img" loading="lazy">
+                        {% else %}
+                            <div class="cat-card-icon">{{ cat.name|slice:":1" }}</div>
+                        {% endif %}
+                    </div>
+                    <span class="cat-card-title">{{ cat.name }}</span>
+                    <span class="cat-card-count">{{ cat.product_count }} model{{ cat.product_count|pluralize }}</span>
+                </a>
+            {% endfor %}
         </div>
     </div>
 </section>
 
-<section id="milestone-info" class="status-section">
+<!-- =========================================================================
+     3. FEATURED PRODUCTS SHOWCASE
+     ========================================================================= -->
+<section class="featured-section" id="featured">
     <div class="container">
-        <div class="status-card">
-            <h2>Milestone 1 Verification Passed</h2>
-            <div class="status-grid">
-                <div class="status-item">
-                    <span class="status-label">Framework</span>
-                    <span class="status-value">Django 5.2 LTS</span>
+        <div class="section-header-flex">
+            <div>
+                <span class="section-tag">Handcrafted Flagships</span>
+                <h2 class="section-title">The Latest. Take a look at what's new.</h2>
+            </div>
+            <a href="{% url 'catalog:product_list' %}" class="section-link">View all models &rsaquo;</a>
+        </div>
+
+        <div class="featured-products-grid">
+            {% for product in featured_products %}
+                <article class="product-card featured-card">
+                    <div class="card-badge-row">
+                        {% if product.discount_percent > 0 %}
+                            <span class="product-discount-pill">{{ product.discount_percent }}% SAVINGS</span>
+                        {% else %}
+                            <span class="product-flagship-pill">Flagship</span>
+                        {% endif %}
+                        <span class="product-category-text">{{ product.category.name }}</span>
+                    </div>
+
+                    <a href="{{ product.get_absolute_url }}" class="product-card-media-wrap">
+                        {% if product.image %}
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-card-image" loading="lazy">
+                        {% endif %}
+                    </a>
+
+                    <div class="product-card-content">
+                        <h3 class="product-card-title">
+                            <a href="{{ product.get_absolute_url }}">{{ product.name }}</a>
+                        </h3>
+                        {% if product.tagline %}
+                            <p class="product-card-tagline">{{ product.tagline }}</p>
+                        {% endif %}
+
+                        <div class="product-pricing">
+                            <div class="price-main">{{ product.formatted_price }}</div>
+                            {% if product.formatted_original_price %}
+                                <div class="price-mrp">MRP <del>{{ product.formatted_original_price }}</del></div>
+                            {% endif %}
+                        </div>
+
+                        <div class="card-button-group">
+                            <a href="{{ product.get_absolute_url }}" class="btn btn-sm btn-primary">Buy Now</a>
+                            <a href="{{ product.get_absolute_url }}" class="btn-text-link">Learn more &rsaquo;</a>
+                        </div>
+                    </div>
+                </article>
+            {% empty %}
+                <p class="empty-text">No featured products available at this time.</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- =========================================================================
+     4. PROMOTIONAL BENTO GRID
+     ========================================================================= -->
+<section class="promotions-bento-section">
+    <div class="container">
+        <div class="section-heading-centered">
+            <span class="section-tag">NovaStore Exclusives</span>
+            <h2 class="section-title">Why buying from NovaStore is better than ever.</h2>
+        </div>
+
+        <div class="bento-grid">
+            <!-- Promo 1: Trade In -->
+            <div class="bento-card bento-card-large bento-tradein">
+                <div class="bento-card-body">
+                    <span class="bento-badge">NovaStore Trade In</span>
+                    <h3 class="bento-title">Upgrade and save.<br>It's that easy.</h3>
+                    <p class="bento-desc">
+                        Get up to ₹65,000 credit when you trade in your eligible smartphone, tablet, or PC towards a new Nova device.
+                    </p>
+                    <a href="{% url 'catalog:product_list' %}" class="bento-link">Get your trade-in estimate &rsaquo;</a>
                 </div>
-                <div class="status-item">
-                    <span class="status-label">Environment</span>
-                    <span class="status-value">Python 3.12 (.venv active)</span>
-                </div>
-                <div class="status-item">
-                    <span class="status-label">Database</span>
-                    <span class="status-value">SQLite (Local) / PostgreSQL Ready</span>
-                </div>
-                <div class="status-item">
-                    <span class="status-label">Static & Media</span>
-                    <span class="status-value">WhiteNoise & Pillow Configured</span>
+                <div class="bento-accent-visual">
+                    <div class="phone-silhouette"></div>
                 </div>
             </div>
-            <p class="status-note">
-                Next up in <strong>Milestone 2</strong>: Category, Product, Banner models, image handling, admin interface with image previews, and model migrations.
-            </p>
+
+            <!-- Promo 2: Education -->
+            <div class="bento-card bento-education">
+                <div class="bento-card-body">
+                    <span class="bento-badge">Education Savings</span>
+                    <h3 class="bento-title">Save on NovaBook or NovaPad with student pricing.</h3>
+                    <p class="bento-desc">Available to current and newly accepted college students and their parents.</p>
+                    <a href="{% url 'catalog:product_list' %}" class="bento-link">Shop education pricing &rsaquo;</a>
+                </div>
+            </div>
+
+            <!-- Promo 3: NovaCare+ -->
+            <div class="bento-card bento-care">
+                <div class="bento-card-body">
+                    <span class="bento-badge">NovaCare+</span>
+                    <h3 class="bento-title">Peace of mind. Accidental damage coverage.</h3>
+                    <p class="bento-desc">Includes 24/7 priority technical support, rapid battery replacement, and certified repairs.</p>
+                    <a href="{% url 'catalog:product_list' %}" class="bento-link">Learn about coverage &rsaquo;</a>
+                </div>
+            </div>
+
+            <!-- Promo 4: No Cost EMI -->
+            <div class="bento-card bento-card-wide bento-finance">
+                <div class="bento-card-body">
+                    <span class="bento-badge">Flexible Payments</span>
+                    <h3 class="bento-title">No Cost EMI up to 12 months with eligible cards.</h3>
+                    <p class="bento-desc">
+                        Bring home your favorite tech with zero down payment and zero interest across leading banks in India.
+                    </p>
+                    <a href="{% url 'catalog:product_list' %}" class="bento-link">See payment options &rsaquo;</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- =========================================================================
+     5. STORE ADVANTAGES / PERKS SECTION
+     ========================================================================= -->
+<section class="advantages-section">
+    <div class="container">
+        <div class="advantages-grid">
+            <div class="advantage-card">
+                <div class="advantage-icon">
+                    <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8">
+                        <rect x="1" y="3" width="15" height="13"></rect>
+                        <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+                        <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                        <circle cx="18.5" cy="18.5" r="2.5"></circle>
+                    </svg>
+                </div>
+                <h4 class="advantage-title">Free Express Delivery</h4>
+                <p class="advantage-text">Enjoy fast, free insured delivery directly to any pincode across India.</p>
+            </div>
+
+            <div class="advantage-card">
+                <div class="advantage-icon">
+                    <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8">
+                        <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+                        <line x1="2" y1="10" x2="22" y2="10"></line>
+                    </svg>
+                </div>
+                <h4 class="advantage-title">Flexible EMI Options</h4>
+                <p class="advantage-text">Choose from No Cost EMI or instant bank cashback on credit & debit cards.</p>
+            </div>
+
+            <div class="advantage-card">
+                <div class="advantage-icon">
+                    <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                    </svg>
+                </div>
+                <h4 class="advantage-title">1-Year Official Warranty</h4>
+                <p class="advantage-text">Every Nova product includes comprehensive 1-year brand warranty and support.</p>
+            </div>
+
+            <div class="advantage-card">
+                <div class="advantage-icon">
+                    <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                </div>
+                <h4 class="advantage-title">Expert Product Advice</h4>
+                <p class="advantage-text">Chat with Nova specialists to configure the ideal specifications for your needs.</p>
+            </div>
         </div>
     </div>
 </section>

@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}Products — NovaStore{% endblock %}
+
+{% block content %}
+<div class="container section-spacing">
+    <div class="page-header">
+        <h1 class="page-title">{% if selected_category %}{{ selected_category.name }}{% else %}All Electronics{% endif %}</h1>
+        <p class="page-subtitle">The latest innovations, engineered for peak performance.</p>
+    </div>
+
+    <!-- Category Filter Bar -->
+    <div class="category-filter-strip">
+        <a href="{% url 'catalog:product_list' %}" class="filter-pill {% if not selected_category %}active{% endif %}">All</a>
+        {% for cat in categories %}
+            <a href="{% url 'catalog:category_detail' slug=cat.slug %}" class="filter-pill {% if selected_category and selected_category.slug == cat.slug %}active{% endif %}">
+                {{ cat.name }}
+            </a>
+        {% endfor %}
+    </div>
+
+    <!-- Product Grid -->
+    <div class="products-grid">
+        {% for product in products %}
+            <article class="product-card">
+                {% if product.discount_percent > 0 %}
+                    <span class="product-discount-badge">{{ product.discount_percent }}% OFF</span>
+                {% elif product.is_featured %}
+                    <span class="product-badge">Featured</span>
+                {% endif %}
+                
+                <a href="{{ product.get_absolute_url }}" class="product-image-wrap">
+                    {% if product.image %}
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-card-img" loading="lazy">
+                    {% else %}
+                        <div class="product-img-placeholder">{{ product.name|slice:":2" }}</div>
+                    {% endif %}
+                </a>
+
+                <div class="product-info">
+                    <span class="product-category-tag">{{ product.category.name }}</span>
+                    <h2 class="product-title">
+                        <a href="{{ product.get_absolute_url }}">{{ product.name }}</a>
+                    </h2>
+                    {% if product.tagline %}
+                        <p class="product-tagline">{{ product.tagline }}</p>
+                    {% endif %}
+
+                    <div class="product-price-row">
+                        <span class="price-current">{{ product.formatted_price }}</span>
+                        {% if product.formatted_original_price %}
+                            <span class="price-original"><del>{{ product.formatted_original_price }}</del></span>
+                        {% endif %}
+                    </div>
+
+                    <div class="product-card-actions">
+                        <a href="{{ product.get_absolute_url }}" class="btn btn-sm btn-primary">View Details</a>
+                    </div>
+                </div>
+            </article>
+        {% empty %}
+            <div class="empty-state">
+                <p>No products found matching your selection.</p>
+                <a href="{% url 'catalog:product_list' %}" class="btn btn-secondary">View All Products</a>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -1,13 +1,73 @@
+from decimal import Decimal
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from django.urls import reverse
+from catalog.models import Category, Product
 from .models import Banner
 
 User = get_user_model()
 
 
 class CoreViewsTest(TestCase):
+    def setUp(self):
+        small_gif = (
+            b"\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x80\x00\x00\xff\xff\xff"
+            b"\x00\x00\x00\x21\xf9\x04\x01\x00\x00\x00\x00\x2c\x00\x00\x00\x00"
+            b"\x01\x00\x01\x00\x00\x02\x02\x44\x01\x00\x3b"
+        )
+        self.test_img = SimpleUploadedFile("test.gif", small_gif, content_type="image/gif")
+
+        # Banners
+        self.active_banner = Banner.objects.create(
+            title="NovaBook Special Banner",
+            subtitle="Headline for testing",
+            image=self.test_img,
+            order=1,
+            is_active=True,
+        )
+        self.inactive_banner = Banner.objects.create(
+            title="Secret Inactive Banner",
+            image=self.test_img,
+            order=2,
+            is_active=False,
+        )
+
+        # Categories
+        self.category = Category.objects.create(
+            name="Laptops",
+            slug="laptops",
+            is_active=True,
+            order=1,
+        )
+        self.inactive_category = Category.objects.create(
+            name="Hidden Category",
+            slug="hidden-category",
+            is_active=False,
+            order=2,
+        )
+
+        # Products
+        self.featured_product = Product.objects.create(
+            category=self.category,
+            name="NovaBook Pro Max Test",
+            slug="novabook-pro-max-test",
+            tagline="Extreme Pro Power",
+            price=Decimal("199900.00"),
+            image=self.test_img,
+            is_active=True,
+            is_featured=True,
+        )
+        self.inactive_product = Product.objects.create(
+            category=self.category,
+            name="Secret Prototype Device",
+            slug="secret-prototype",
+            price=Decimal("999900.00"),
+            image=self.test_img,
+            is_active=False,
+            is_featured=True,
+        )
+
     def test_home_page_status_code(self):
         """Verify the home page loads successfully with HTTP 200."""
         response = self.client.get(reverse("core:home"))
@@ -19,10 +79,29 @@ class CoreViewsTest(TestCase):
         self.assertTemplateUsed(response, "core/home.html")
         self.assertTemplateUsed(response, "base.html")
 
-    def test_home_page_content(self):
-        """Verify the brand name and title are present in response."""
+    def test_home_page_content_and_branding(self):
+        """Verify the brand name is present in response."""
         response = self.client.get(reverse("core:home"))
         self.assertContains(response, "NovaStore")
+
+    def test_home_page_displays_active_banners_only(self):
+        """Only active banners should be present in public homepage."""
+        response = self.client.get(reverse("core:home"))
+        self.assertContains(response, "NovaBook Special Banner")
+        self.assertNotContains(response, "Secret Inactive Banner")
+
+    def test_home_page_displays_featured_products_only(self):
+        """Featured active products must appear, but inactive products must not."""
+        response = self.client.get(reverse("core:home"))
+        self.assertContains(response, "NovaBook Pro Max Test")
+        self.assertContains(response, "₹1,99,900")
+        self.assertNotContains(response, "Secret Prototype Device")
+
+    def test_home_page_displays_active_categories(self):
+        """Active categories appear in nav and category ribbon, inactive do not."""
+        response = self.client.get(reverse("core:home"))
+        self.assertContains(response, "Laptops")
+        self.assertNotContains(response, "Hidden Category")
 
     def test_admin_redirect_or_login(self):
         """Verify admin portal redirects unauthenticated users."""

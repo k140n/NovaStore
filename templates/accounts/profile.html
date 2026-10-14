@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}My Account — NovaStore{% endblock %}
+
+{% block content %}
+<div class="container auth-container">
+    <div class="auth-card">
+        <h1>NovaStore Account</h1>
+        <p class="auth-subtitle">Welcome back to your member hub.</p>
+        <p class="placeholder-note">Account profile management will be implemented in Milestone 5.</p>
+        <a href="{% url 'core:home' %}" class="btn btn-primary">Return to Store</a>
+    </div>
+</div>
+{% endblock %}

@@ -4,5 +4,7 @@ from . import views
 app_name = "catalog"
 
 urlpatterns = [
-    # Catalog routes will be implemented in Milestone 4
+    path("", views.product_list_view, name="product_list"),
+    path("category/<slug:slug>/", views.category_detail_view, name="category_detail"),
+    path("product/<slug:slug>/", views.product_detail_view, name="product_detail"),
 ]

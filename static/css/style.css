@@ -652,25 +652,9 @@ button {
 .carousel-control.prev { left: 16px; }
 .carousel-control.next { right: 16px; }
 
-.carousel-indicators {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin-top: 32px;
-}
-
+.carousel-indicators,
 .carousel-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.25);
-    transition: var(--transition);
-}
-
-.carousel-dot.active {
-    width: 26px;
-    border-radius: var(--radius-full);
-    background: var(--accent);
+    display: none !important;
 }
 
 /* ==========================================================================
@@ -2198,15 +2182,105 @@ button {
     .slide-content-wrapper {
         grid-template-columns: 1fr;
         text-align: center;
-        gap: 32px;
+        gap: 16px;
+        padding: 0 12px;
+    }
+
+    .hero-carousel-section {
+        padding: 20px 0 28px;
+    }
+
+    .carousel-track {
+        min-height: auto;
     }
 
     .slide-text {
         max-width: 100%;
+        margin: 0 auto;
+    }
+
+    .badge-hero {
+        font-size: 11px;
+        padding: 4px 12px;
+        margin-bottom: 8px;
+        letter-spacing: 0.05em;
+    }
+
+    .slide-title {
+        font-size: clamp(24px, 6.5vw, 34px);
+        line-height: 1.14;
+        margin-bottom: 8px;
+        font-weight: 700;
+    }
+
+    .slide-subtitle {
+        font-size: clamp(14px, 3.8vw, 17px);
+        line-height: 1.35;
+        margin-bottom: 8px;
+        color: #e5e5ea;
+        font-weight: 500;
+    }
+
+    .slide-desc {
+        font-size: 13px;
+        line-height: 1.5;
+        margin-bottom: 16px;
+        max-width: 420px;
+        margin-left: auto;
+        margin-right: auto;
+        color: var(--text-secondary);
     }
 
     .slide-actions {
         justify-content: center;
+        gap: 10px;
+        margin-bottom: 12px;
+    }
+
+    .slide-actions .btn {
+        padding: 9px 18px;
+        font-size: 13.5px;
+    }
+
+    .slide-media {
+        width: 100%;
+        max-width: 340px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .slide-img {
+        max-height: 220px;
+        width: auto;
+        max-width: 100%;
+        object-fit: contain;
+        background: radial-gradient(circle at center, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: var(--radius-lg);
+        box-shadow: 0 14px 32px rgba(0, 0, 0, 0.5);
+    }
+
+    .carousel-control {
+        display: flex !important;
+        width: 34px;
+        height: 34px;
+        background: rgba(18, 18, 22, 0.75);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .carousel-control.prev {
+        left: 4px;
+    }
+
+    .carousel-control.next {
+        right: 4px;
+    }
+
+    .carousel-control svg {
+        width: 15px;
+        height: 15px;
     }
 
     .product-detail-layout {
@@ -2244,10 +2318,6 @@ button {
         gap: 12px;
     }
 
-    .carousel-control {
-        display: none;
-    }
-
     .product-detail-layout {
         gap: 24px;
     }
@@ -2266,8 +2336,7 @@ button {
     .btn,
     .nav-icon-btn,
     .nav-link,
-    .filter-pill,
-    .carousel-dot {
+    .filter-pill {
         min-height: 44px;
         min-width: 44px;
         display: inline-flex;

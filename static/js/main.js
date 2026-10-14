@@ -82,7 +82,6 @@ function initHeroCarousel() {
     if (!carousel) return;
 
     const slides = carousel.querySelectorAll(".carousel-slide");
-    const dots = carousel.querySelectorAll(".carousel-dot");
     const prevBtn = document.getElementById("carousel-prev-btn");
     const nextBtn = document.getElementById("carousel-next-btn");
 
@@ -94,16 +93,8 @@ function initHeroCarousel() {
 
     function goToSlide(index) {
         slides[currentIndex].classList.remove("active");
-        if (dots[currentIndex]) {
-            dots[currentIndex].classList.remove("active");
-        }
-
         currentIndex = (index + slides.length) % slides.length;
-
         slides[currentIndex].classList.add("active");
-        if (dots[currentIndex]) {
-            dots[currentIndex].classList.add("active");
-        }
     }
 
     function nextSlide() {
@@ -126,7 +117,7 @@ function initHeroCarousel() {
         }
     }
 
-    // Attach event listeners
+    // Attach button event listeners
     if (nextBtn) {
         nextBtn.addEventListener("click", () => {
             nextSlide();
@@ -141,12 +132,31 @@ function initHeroCarousel() {
         });
     }
 
-    dots.forEach((dot, idx) => {
-        dot.addEventListener("click", () => {
-            goToSlide(idx);
-            startAutoPlay();
-        });
-    });
+    // Mobile touch swipe gesture support
+    let touchStartX = 0;
+    let touchStartY = 0;
+
+    carousel.addEventListener("touchstart", (e) => {
+        if (!e.changedTouches || e.changedTouches.length === 0) return;
+        touchStartX = e.changedTouches[0].screenX;
+        touchStartY = e.changedTouches[0].screenY;
+        stopAutoPlay();
+    }, { passive: true });
+
+    carousel.addEventListener("touchend", (e) => {
+        if (!e.changedTouches || e.changedTouches.length === 0) return;
+        const diffX = e.changedTouches[0].screenX - touchStartX;
+        const diffY = e.changedTouches[0].screenY - touchStartY;
+        // Require horizontal swipe to dominate vertical scroll and exceed 35px threshold
+        if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 35) {
+            if (diffX < 0) {
+                nextSlide();
+            } else {
+                prevSlide();
+            }
+        }
+        startAutoPlay();
+    }, { passive: true });
 
     // Pause on hover
     carousel.addEventListener("mouseenter", stopAutoPlay);

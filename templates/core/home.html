@@ -14,6 +14,9 @@
                 <article class="carousel-slide {% if forloop.first %}active{% endif %}" data-index="{{ forloop.counter0 }}">
                     <div class="container slide-content-wrapper">
                         <div class="slide-text">
+                            {% if banner.badge_text %}
+                                <span class="badge-hero">{{ banner.badge_text }}</span>
+                            {% endif %}
                             {% if forloop.first %}
                                 <h1 class="slide-title">{{ banner.title }}</h1>
                             {% else %}
@@ -64,13 +67,6 @@
         </div>
 
         {% if banners|length > 1 %}
-            <!-- Carousel Navigation Dots -->
-            <div class="carousel-indicators" id="carousel-indicators" aria-label="Banner indicators">
-                {% for banner in banners %}
-                    <button type="button" class="carousel-dot {% if forloop.first %}active{% endif %}" data-slide="{{ forloop.counter0 }}" aria-label="Go to banner {{ forloop.counter }}"></button>
-                {% endfor %}
-            </div>
-
             <!-- Carousel Prev/Next Buttons -->
             <button type="button" class="carousel-control prev" id="carousel-prev-btn" aria-label="Previous banner">
                 <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>

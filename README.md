@@ -7,7 +7,7 @@ NovaStore is an original, responsive electronics e-commerce web application insp
 ## Features & Milestones Roadmap
 
 - [x] **Milestone 1**: Project initialization, environment setup, 12-factor configuration, core routing, automated tests.
-- [ ] **Milestone 2**: Category, Product, and Banner models, migrations, media upload handling, Django Admin integration with image previews.
+- [x] **Milestone 2**: Category, Product, and Banner models, migrations, media upload handling, Django Admin integration with image previews.
 - [ ] **Milestone 3**: Apple-inspired layout, responsive navigation, dynamic banners, featured products showcase, promotional sections.
 - [ ] **Milestone 4**: Product catalogue, category filtering, search, detail view, specifications grid, 404/empty states.
 - [ ] **Milestone 5**: User authentication (register, login, logout, account profile) with Django's secure auth system.

@@ -21,21 +21,25 @@ function initHeaderSearch() {
     if (!searchBtn || !searchBar) return;
 
     searchBtn.addEventListener("click", () => {
-        const isOpen = searchBar.classList.toggle("open");
-        if (isOpen && searchInput) {
+        const isHidden = searchBar.style.display === "none";
+        searchBar.style.display = isHidden ? "block" : "none";
+        searchBar.classList.toggle("open", isHidden);
+        if (isHidden && searchInput) {
             setTimeout(() => searchInput.focus(), 100);
         }
     });
 
     if (searchClose) {
         searchClose.addEventListener("click", () => {
+            searchBar.style.display = "none";
             searchBar.classList.remove("open");
         });
     }
 
     // Dismiss search bar on Escape key
     document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape" && searchBar.classList.contains("open")) {
+        if (e.key === "Escape" && searchBar.style.display === "block") {
+            searchBar.style.display = "none";
             searchBar.classList.remove("open");
         }
     });
@@ -51,15 +55,18 @@ function initMobileNav() {
     if (!hamburgerBtn || !mobileDrawer) return;
 
     hamburgerBtn.addEventListener("click", () => {
-        const isOpen = mobileDrawer.classList.toggle("open");
-        hamburgerBtn.setAttribute("aria-expanded", isOpen ? "true" : "false");
-        document.body.style.overflow = isOpen ? "hidden" : "";
+        const isHidden = mobileDrawer.style.display === "none";
+        mobileDrawer.style.display = isHidden ? "block" : "none";
+        mobileDrawer.classList.toggle("open", isHidden);
+        hamburgerBtn.setAttribute("aria-expanded", isHidden ? "true" : "false");
+        document.body.style.overflow = isHidden ? "hidden" : "";
     });
 
     // Close mobile drawer when clicking links inside
     const drawerLinks = mobileDrawer.querySelectorAll("a");
     drawerLinks.forEach((link) => {
         link.addEventListener("click", () => {
+            mobileDrawer.style.display = "none";
             mobileDrawer.classList.remove("open");
             hamburgerBtn.setAttribute("aria-expanded", "false");
             document.body.style.overflow = "";

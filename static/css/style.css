@@ -1,29 +1,29 @@
 /* ==========================================================================
-   NovaStore — Premium Apple-Inspired Electronics Storefront Design System
+   NovaStore — Modern Apple India Store-Inspired Design System
    ========================================================================== */
 
 :root {
     --bg-page: #000000;
-    --bg-header: rgba(0, 0, 0, 0.82);
+    --bg-header: rgba(0, 0, 0, 0.85);
     --bg-card: #161617;
     --bg-card-hover: #1d1d1f;
     --bg-surface: #101012;
-    --bg-accent-subtle: rgba(41, 151, 255, 0.1);
+    --bg-accent-subtle: rgba(0, 113, 227, 0.15);
     
     --text-primary: #f5f5f7;
     --text-secondary: #86868b;
     --text-muted: #6e6e73;
     --text-highlight: #ffffff;
     
-    --accent: #2997ff;
+    --accent: #0071e3;
     --accent-hover: #0077ed;
-    --accent-glow: rgba(41, 151, 255, 0.35);
+    --accent-glow: rgba(0, 113, 227, 0.45);
     --tag-green: #30d158;
     --tag-amber: #ff9f0a;
     
     --border-subtle: rgba(255, 255, 255, 0.08);
     --border-card: rgba(255, 255, 255, 0.14);
-    --border-focus: rgba(41, 151, 255, 0.6);
+    --border-focus: rgba(0, 113, 227, 0.6);
 
     --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif;
     
@@ -35,8 +35,8 @@
 
     --transition: all 0.28s cubic-bezier(0.25, 0.1, 0.25, 1);
     --transition-fast: all 0.18s ease;
-    --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.5);
-    --shadow-elevated: 0 20px 40px rgba(0, 0, 0, 0.7);
+    --shadow-card: 0 12px 36px rgba(0, 0, 0, 0.6);
+    --shadow-elevated: 0 24px 60px rgba(0, 0, 0, 0.8);
 }
 
 /* Base Reset & Global Styles */
@@ -133,7 +133,7 @@ button {
     max-width: 1240px;
     margin: 0 auto;
     padding: 0 24px;
-    height: 52px;
+    height: 48px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -144,7 +144,7 @@ button {
     align-items: center;
     gap: 8px;
     font-weight: 600;
-    font-size: 18px;
+    font-size: 17px;
     letter-spacing: -0.02em;
     color: var(--text-primary);
 }
@@ -158,19 +158,19 @@ button {
 .nav-menu {
     display: flex;
     align-items: center;
-    gap: 32px;
+    gap: 28px;
 }
 
 .nav-link {
-    font-size: 13px;
-    color: var(--text-secondary);
+    font-size: 12px;
+    color: #d6d6d6;
     font-weight: 400;
     letter-spacing: -0.01em;
     transition: var(--transition-fast);
 }
 
 .nav-link:hover {
-    color: var(--text-primary);
+    color: #ffffff;
 }
 
 .nav-actions {
@@ -185,18 +185,18 @@ button {
     justify-content: center;
     width: 32px;
     height: 32px;
-    color: var(--text-secondary);
+    color: #d6d6d6;
     border-radius: 50%;
     transition: var(--transition-fast);
 }
 
 .nav-icon-btn:hover {
-    color: var(--text-primary);
-    background: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.1);
 }
 
 .nav-user-link {
-    font-size: 13px;
+    font-size: 12px;
     color: var(--accent);
     font-weight: 500;
 }
@@ -227,19 +227,14 @@ button {
 
 /* Header Quick Search Form */
 .header-search-bar {
-    display: none;
     background: #111113;
     border-top: 1px solid var(--border-subtle);
     padding: 18px 0;
     animation: fadeInDown 0.25s ease;
 }
 
-.header-search-bar.open {
-    display: block;
-}
-
 .search-bar-inner {
-    max-width: 800px;
+    max-width: 760px;
 }
 
 .search-form {
@@ -262,7 +257,7 @@ button {
     border: none;
     outline: none;
     color: var(--text-primary);
-    font-size: 15px;
+    font-size: 14px;
     font-family: inherit;
 }
 
@@ -271,7 +266,7 @@ button {
 }
 
 .search-close-btn {
-    font-size: 22px;
+    font-size: 20px;
     line-height: 1;
     color: var(--text-secondary);
 }
@@ -297,20 +292,15 @@ button {
 
 /* Mobile Nav Drawer */
 .mobile-nav-drawer {
-    display: none;
     background: #000000;
     position: fixed;
-    top: 52px;
+    top: 48px;
     left: 0;
     width: 100%;
-    height: calc(100vh - 52px);
+    height: calc(100vh - 48px);
     overflow-y: auto;
     padding: 24px;
     z-index: 999;
-}
-
-.mobile-nav-drawer.open {
-    display: block;
 }
 
 .mobile-search-form {
@@ -378,7 +368,7 @@ button {
 .btn-primary:hover {
     background-color: var(--accent-hover);
     transform: translateY(-1px);
-    box-shadow: 0 4px 16px var(--accent-glow);
+    box-shadow: 0 4px 18px var(--accent-glow);
 }
 
 .btn-secondary {
@@ -388,7 +378,7 @@ button {
 }
 
 .btn-secondary:hover {
-    background-color: rgba(255, 255, 255, 0.2);
+    background-color: rgba(255, 255, 255, 0.22);
     transform: translateY(-1px);
 }
 
@@ -415,8 +405,8 @@ button {
 }
 
 .btn-lg {
-    padding: 14px 30px;
-    font-size: 16px;
+    padding: 13px 28px;
+    font-size: 15px;
     font-weight: 500;
 }
 
@@ -444,7 +434,7 @@ button {
 }
 
 .section-title {
-    font-size: clamp(28px, 4vw, 42px);
+    font-size: clamp(26px, 3.8vw, 40px);
     font-weight: 700;
     letter-spacing: -0.025em;
     line-height: 1.15;
@@ -455,14 +445,14 @@ button {
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
-    margin-bottom: 40px;
+    margin-bottom: 36px;
     flex-wrap: wrap;
     gap: 16px;
 }
 
 .section-link {
     color: var(--accent);
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 400;
 }
 
@@ -473,7 +463,7 @@ button {
 .section-heading-centered {
     text-align: center;
     max-width: 680px;
-    margin: 0 auto 48px;
+    margin: 0 auto 44px;
 }
 
 /* ==========================================================================
@@ -482,20 +472,20 @@ button {
 .hero-carousel-section {
     position: relative;
     overflow: hidden;
-    background: radial-gradient(circle at 50% 25%, rgba(41, 151, 255, 0.1) 0%, transparent 65%);
+    background: radial-gradient(circle at 60% 30%, rgba(0, 113, 227, 0.12) 0%, transparent 65%);
     border-bottom: 1px solid var(--border-subtle);
-    padding: 40px 0 60px;
+    padding: 50px 0 70px;
 }
 
 .carousel-container {
     position: relative;
-    max-width: 1400px;
+    max-width: 1300px;
     margin: 0 auto;
 }
 
 .carousel-track {
     position: relative;
-    min-height: 520px;
+    min-height: 480px;
 }
 
 .carousel-slide {
@@ -503,7 +493,7 @@ button {
     inset: 0;
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.55s ease, transform 0.55s ease;
+    transition: opacity 0.5s ease, transform 0.5s ease;
     transform: scale(0.98);
     display: flex;
     align-items: center;
@@ -518,14 +508,14 @@ button {
 
 .slide-content-wrapper {
     display: grid;
-    grid-template-columns: 1.1fr 1fr;
+    grid-template-columns: 1fr 1.1fr;
     align-items: center;
-    gap: 48px;
+    gap: 40px;
     width: 100%;
 }
 
 .slide-text {
-    max-width: 580px;
+    max-width: 520px;
 }
 
 .badge-hero {
@@ -535,37 +525,37 @@ button {
     font-weight: 600;
     color: var(--accent);
     background: var(--bg-accent-subtle);
-    border: 1px solid rgba(41, 151, 255, 0.28);
+    border: 1px solid rgba(0, 113, 227, 0.3);
     border-radius: var(--radius-full);
-    margin-bottom: 18px;
+    margin-bottom: 16px;
     letter-spacing: 0.04em;
     text-transform: uppercase;
 }
 
 .slide-title {
-    font-size: clamp(34px, 5.2vw, 62px);
+    font-size: clamp(34px, 5vw, 60px);
     font-weight: 700;
     letter-spacing: -0.03em;
     line-height: 1.08;
-    margin-bottom: 16px;
-    background: linear-gradient(180deg, #ffffff 30%, #86868b 100%);
+    margin-bottom: 14px;
+    background: linear-gradient(180deg, #ffffff 40%, #a1a1a6 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
 .slide-subtitle {
     font-size: clamp(17px, 2.2vw, 22px);
-    color: var(--text-primary);
+    color: #d6d6d6;
     font-weight: 500;
     line-height: 1.35;
-    margin-bottom: 14px;
+    margin-bottom: 12px;
 }
 
 .slide-desc {
     font-size: 15px;
     color: var(--text-secondary);
     line-height: 1.55;
-    margin-bottom: 30px;
+    margin-bottom: 28px;
 }
 
 .slide-actions {
@@ -592,7 +582,7 @@ button {
 
 .slide-img-placeholder {
     width: 100%;
-    height: 420px;
+    height: 400px;
     background: var(--bg-card);
     border-radius: var(--radius-lg);
     display: flex;
@@ -607,9 +597,9 @@ button {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    width: 44px;
-    height: 44px;
-    background: rgba(0, 0, 0, 0.6);
+    width: 42px;
+    height: 42px;
+    background: rgba(0, 0, 0, 0.65);
     backdrop-filter: blur(12px);
     border: 1px solid var(--border-card);
     border-radius: 50%;
@@ -637,15 +627,15 @@ button {
 }
 
 .carousel-dot {
-    width: 9px;
-    height: 9px;
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.25);
     transition: var(--transition);
 }
 
 .carousel-dot.active {
-    width: 28px;
+    width: 26px;
     border-radius: var(--radius-full);
     background: var(--accent);
 }
@@ -654,24 +644,24 @@ button {
    2. CATEGORY RIBBON SECTION
    ========================================================================= */
 .category-ribbon-section {
-    padding: 60px 0 40px;
+    padding: 50px 0 36px;
     border-bottom: 1px solid var(--border-subtle);
 }
 
 .ribbon-header {
     text-align: center;
-    margin-bottom: 36px;
+    margin-bottom: 32px;
 }
 
 .ribbon-title {
-    font-size: 28px;
+    font-size: 26px;
     font-weight: 600;
     letter-spacing: -0.02em;
 }
 
 .category-strip {
     display: flex;
-    gap: 20px;
+    gap: 18px;
     overflow-x: auto;
     padding-bottom: 16px;
     scrollbar-width: thin;
@@ -679,11 +669,11 @@ button {
 }
 
 .category-strip-card {
-    flex: 0 0 190px;
+    flex: 0 0 180px;
     background: var(--bg-card);
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius-md);
-    padding: 20px 16px;
+    padding: 18px 14px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -699,35 +689,36 @@ button {
 }
 
 .cat-card-media {
-    width: 90px;
-    height: 70px;
+    width: 80px;
+    height: 64px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 14px;
+    margin-bottom: 12px;
 }
 
 .cat-card-img {
     max-width: 100%;
     max-height: 100%;
-    object-fit: contain;
+    object-fit: cover;
+    border-radius: var(--radius-sm);
 }
 
 .cat-card-icon {
-    font-size: 26px;
+    font-size: 24px;
     font-weight: 700;
     color: var(--accent);
 }
 
 .cat-card-title {
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 600;
     color: var(--text-primary);
-    margin-bottom: 4px;
+    margin-bottom: 2px;
 }
 
 .cat-card-count {
-    font-size: 12px;
+    font-size: 11px;
     color: var(--text-secondary);
 }
 
@@ -735,7 +726,7 @@ button {
    3. FEATURED PRODUCTS SECTION
    ========================================================================= */
 .featured-section {
-    padding: 80px 0;
+    padding: 70px 0;
     border-bottom: 1px solid var(--border-subtle);
 }
 
@@ -785,7 +776,7 @@ button {
 .product-flagship-pill {
     background: var(--bg-accent-subtle);
     color: var(--accent);
-    border: 1px solid rgba(41, 151, 255, 0.3);
+    border: 1px solid rgba(0, 113, 227, 0.3);
     padding: 3px 8px;
     border-radius: var(--radius-full);
     font-weight: 600;
@@ -800,18 +791,20 @@ button {
 }
 
 .product-card-media-wrap {
-    height: 220px;
+    height: 240px;
     display: flex;
     align-items: center;
     justify-content: center;
     margin-bottom: 20px;
     overflow: hidden;
+    background: #000;
+    border-radius: var(--radius-md);
 }
 
 .product-card-image {
     max-height: 100%;
     max-width: 100%;
-    object-fit: contain;
+    object-fit: cover;
     transition: transform 0.4s ease;
 }
 
@@ -874,7 +867,7 @@ button {
    4. PROMOTIONS BENTO GRID
    ========================================================================= */
 .promotions-bento-section {
-    padding: 80px 0;
+    padding: 70px 0;
     background: #09090b;
     border-bottom: 1px solid var(--border-subtle);
 }
@@ -906,8 +899,8 @@ button {
 
 .bento-card-large {
     grid-column: span 7;
-    min-height: 380px;
-    background: linear-gradient(135deg, #18181b 0%, #1e1b4b 100%);
+    min-height: 340px;
+    background: linear-gradient(135deg, #18181b 0%, #172554 100%);
 }
 
 .bento-education {
@@ -922,7 +915,7 @@ button {
 
 .bento-card-wide {
     grid-column: span 7;
-    background: linear-gradient(135deg, #18181b 0%, #2e1065 100%);
+    background: linear-gradient(135deg, #18181b 0%, #311042 100%);
 }
 
 .bento-badge {
@@ -946,7 +939,7 @@ button {
 
 .bento-desc {
     font-size: 14px;
-    color: var(--text-secondary);
+    color: #a1a1a6;
     line-height: 1.5;
     max-width: 420px;
     margin-bottom: 24px;
@@ -968,7 +961,7 @@ button {
    5. ADVANTAGES SECTION
    ========================================================================= */
 .advantages-section {
-    padding: 70px 0;
+    padding: 60px 0;
     border-bottom: 1px solid var(--border-subtle);
 }
 
@@ -984,8 +977,8 @@ button {
 }
 
 .advantage-icon {
-    width: 56px;
-    height: 56px;
+    width: 54px;
+    height: 54px;
     border-radius: 50%;
     background: var(--bg-card);
     border: 1px solid var(--border-subtle);
@@ -997,7 +990,7 @@ button {
 }
 
 .advantage-title {
-    font-size: 17px;
+    font-size: 16px;
     font-weight: 600;
     margin-bottom: 8px;
 }
